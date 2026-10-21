@@ -1,0 +1,13 @@
+{
+  "name": "sysmart-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SYSMART AI from SYLUTION — responsive farming intelligence PWA and Vercel API functions.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check app.js && node --check core.js && node --check server.mjs && node --check api/chat.js && node --check api/plant-doctor.js && node --check api/weather.js && node --check sw.js",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
