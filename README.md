@@ -2,6 +2,19 @@
 
 SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and beyond. The home interface is dark forest green with a responsive dashboard, quick AI advice, practical farming tools and real field photography. All interface text is in English.
 
+## Version 0.8.0 — Premium color system
+
+This release applies a single premium agricultural design language to Home, weather, navigation, and other workspaces:
+
+- Midnight Forest (`#061D16`) main background and Almost-Black Green (`#04150F`) navigation.
+- Rich Emerald (`#103A2B`) weather surfaces, Luxury Lime (`#C8EFA9`) main actions, Soft Ivory (`#F6F8F2`) AI composition and reading surfaces.
+- Muted Sage (`#A6C1B1`) supporting text, Aqua (`#74CCD1`) humidity, Blue (`#7BAFF1`) rainfall, and Gold (`#F5C96C`) sunshine.
+- A time-appropriate farmer greeting with compact weather instead of a giant hero banner.
+- iPhone/Android-friendly input sizing, touch targets, contrast and reduced-motion preferences.
+- Updated mobile browser and PWA theme, cache namespace, and app metadata.
+
+This is a working front-end styling release, not a claim that AI provider credentials, user accounts, or FarmX/IoT integrations are configured.
+
 ## Version 0.6.0 — Real weather intelligence on Home
 
 - Automatic weather for the selected Nigerian city, showing actual forecast temperature, humidity, wind speed, today's highest forecast rain probability and a three-day outlook.
