@@ -1,22 +1,28 @@
 # SYSMART AI — from SYLUTION
 
-Minimal, mobile-first agricultural assistant. Version 0.4 redesign.
+SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and beyond. The home interface is dark forest green with a responsive dashboard, quick AI advice, practical farming tools and real field photography. All interface text is in English.
 
-## Product experience
+## Version 0.5.0 — Premium forest redesign
 
-- English-only clean Home, centered ask-anything composer, real-photo farming editorial.
-- Primary tools: AI Farm Advisor, Plant Doctor, Crop Planner, Weather, My Farms, Farm Records.
-- Removed filler feature cards, fake KPI statistics, promotional sidebar, imaginary live sensor data and sample farm records from the default user experience.
-- Farmers' existing real saved records and chats remain in browser localStorage. Legacy demo entries are filtered out.
-- Uses photographs hosted by Unsplash for agricultural backgrounds and farm covers; graceful gradient placeholders when imagery cannot load.
-- Responsive for Android, iPhone, tablet and desktop.
+- Home has a single dark, photographic hero, one prominent AI question composer and four essential farming actions.
+- Removed promotional filler, mock statistics and unrelated cards from Home.
+- Real user farms appear beneath the primary tools; the empty state provides an Add Farm action instead of fake data.
+- Responsive layouts for 320px/390px phones, tablet and desktop widths; mobile navigation remains accessible.
+- Desktop sidebar and mobile header/bottom navigation adopt a cohesive deeper forest palette.
+- Weather values appear only if retrieved; no fabricated live readings are shown.
+- Code preserves existing local storage keys and backend endpoint contracts.
+- Updated PWA cache namespace to encourage loading latest styles.
 
-## Limitations
+## Running locally
 
-AI Chat and Plant Doctor still require `OPENAI_API_KEY` on the server, proper authentication and abuse controls before unrestricted public use. Weather pulls public forecast data, not a guarantee. Farm data is stored locally in this MVP, not synced between devices. Smart sensors and marketplace are not connected.
+With Node.js 20+: `npm run preview`, then visit `http://localhost:4173`. The zero-dependency preview server serves the frontend. Use `vercel dev` to test serverless APIs.
 
-## Running
+Run checks with `npm run check && npm test`.
 
-`npm run preview` — local static preview. `npm run check` and `npm test` — syntax and unit checks. Production is a static Vercel web app with separate `/api` functions.
+## Feature status
 
-**SYSMART AI · from SYLUTION**
+The Crop Planner, local Farm Records and Farms workspace are functional in the browser. The weather endpoint uses Open-Meteo. AI Advisor and Plant Doctor require a server-side `OPENAI_API_KEY` and suitable provider access. Do not expose API keys in frontend code. This MVP has no cloud sync or production-grade user authentication; private farm records remain in local browser storage. Sensor and marketplace integrations are planned, not live.
+
+## Deployment
+
+Vercel serves `index.html`, `app.js`, `styles.css`, `core.js` and other static files. `api/*.js` are serverless handlers. `vercel.json` is configured for a static frontend. Update the linked `main` branch to trigger deployment and verify live runtime logs separately.

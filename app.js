@@ -98,49 +98,51 @@ function feature(p,i,title,subtitle,kind){return `<button data-page="${p}" class
 function home(){
  const active=state.farms.filter(f=>!f.demo);
  const current=ui.weather?.current;
- const hasWeather=!!current && Number.isFinite(Number(current.temperature_2m));
- const greeting=new Date().getHours()<12?'Good morning':new Date().getHours()<17?'Good afternoon':'Good evening';
- return `<div class="v4-home" aria-label="SYSMART AI home dashboard">
-   <section class="v4-welcome"><div class="v4-welcome-label">YOUR INTELLIGENT FARMING ASSISTANT</div>
-     <h1>${greeting}<span class="v4-wave">.</span></h1>
-     <p>What can I help you grow today?</p>
-   </section>
-   <section class="v4-prompt" aria-label="Ask your AI farming advisor">
-     <form id="home-ai-form" class="v4-composer">
-       <label for="home-question" class="sr-only">Ask a farming question</label>
-       <textarea id="home-question" rows="2" maxlength="3000" placeholder="Ask anything about your farm…"></textarea>
-       <div class="v4-composer-bottom">
-         <div class="v4-composer-label">${icon('leaf',16)} SYSMART AI Advisor</div>
-         <button type="submit" aria-label="Send farming question">${icon('arrow',19)}</button>
+ const hasWeather=!!current&&Number.isFinite(Number(current.temperature_2m));
+ const weatherText=hasWeather?`${Math.round(current.temperature_2m)}°C · ${esc(weatherLabel(current.weather_code))}`:'View local forecast';
+ return `<div class="v5-home" aria-label="SYSMART AI farming workspace">
+   <div class="v5-main">
+     <section class="v5-hero" aria-labelledby="v5-hero-heading">
+       <div class="v5-hero-image" role="img" aria-label="Real photograph of growing crops on a cultivated farm"></div>
+       <div class="v5-hero-content">
+         <div class="v5-eyebrow"><span class="v5-live-dot"></span> YOUR AGRICULTURAL INTELLIGENCE</div>
+         <h1 id="v5-hero-heading">Grow smarter.<br><em>Every season.</em></h1>
+         <p>Practical AI guidance for healthier crops, better planning and confident farm decisions.</p>
+         <button type="button" class="v5-hero-link" data-page="plant">Explore crop health ${icon('arrow',17)}</button>
        </div>
-     </form>
-     <div class="v4-prompts">
-       <button data-action="suggest" data-question="What should I consider before planting tomatoes in Kano?">${icon('leaf',15)} Tomato farming</button>
-       <button data-action="suggest" data-question="Help me make a simple irrigation schedule for my vegetable farm.">${icon('drop',15)} Irrigation advice</button>
-       <button data-action="suggest" data-question="Create a practical maize growing checklist for northern Nigeria.">${icon('calendar',15)} Maize checklist</button>
-     </div>
-   </section>
-   <section class="v4-features" aria-label="Your most useful farm tools">
-     <div class="v4-section-title"><h2>Explore your tools</h2><p>Everything you need to grow with confidence.</p></div>
-     <div class="v4-feature-grid">
-       <button class="v4-feature" data-page="plant"><span class="v4-feature-icon v4-icon-green">${icon('doctor',24)}</span><strong>Plant Doctor</strong><small>Check crop problems from a photo</small><span class="v4-feature-arrow">${icon('arrow',17)}</span></button>
-       <button class="v4-feature" data-page="planner"><span class="v4-feature-icon v4-icon-sage">${icon('calendar',23)}</span><strong>Crop Planner</strong><small>Plan planting and harvest dates</small><span class="v4-feature-arrow">${icon('arrow',17)}</span></button>
-       <button class="v4-feature" data-page="weather"><span class="v4-feature-icon v4-icon-blue">${icon('cloud',24)}</span><strong>Weather</strong><small>Check your local forecast</small><span class="v4-feature-arrow">${icon('arrow',17)}</span></button>
-     </div>
-   </section>
-   <section class="v4-editorial" aria-label="Farm guidance">
-     <div class="v4-editorial-photo" role="img" aria-label="Photograph of a real cultivated agricultural landscape"></div>
-     <div class="v4-editorial-text"><span>FARM BETTER, EVERY DAY</span><h2>Made for the people who grow our future.</h2>
-       <p>Personalized agricultural guidance, practical tools, and your farm records—all in one simple workspace.</p>
-       <button data-page="farms">Explore My Farms ${icon('arrow',18)}</button>
-     </div>
-   </section>
-   <section class="v4-myfarm" aria-label="Your farms">
-     <div class="v4-farm-head"><div><h2>My farms</h2><p>${active.length?`${active.length} ${active.length===1?'farm':'farms'} in your workspace`:'A home for your growing records'}</p></div><button data-action="add-farm" class="v4-add-farm">${icon('plus',17)} Add farm</button></div>
-     ${active.length?`<div class="v4-farm-list">${active.slice(0,2).map(f=>`<button class="v4-farm-entry" data-action="view-farm" data-id="${esc(f.id)}"><span class="v4-farm-thumb" style="background-image:url('${photoFor(f.crop)}')"></span><span class="v4-farm-data"><strong>${esc(f.name)}</strong><small>${esc(f.location)} · ${cropName(f.crop)} · ${formatNumber(f.area)} ha</small></span>${icon('chevron',17)}</button>`).join('')}</div>`:
-     `<div class="v4-farm-empty"><span class="v4-farm-empty-icon">${icon('farm',24)}</span><div><strong>Your farming journey starts here.</strong><p>Add a farm when you're ready. No sample data or fake statistics.</p></div></div>`}
-   </section>
-   <div class="v4-last-line"><span>${icon('shield',14)} AI advice is informational. Confirm important crop treatments locally.</span><span>from SYLUTION</span></div>
+       <button class="v5-weather-chip" data-page="weather" aria-label="View weather forecast for ${esc(state.profile.city)}">
+         <span class="v5-weather-symbol">${icon('cloud',20)}</span><span><strong>${esc(state.profile.city)}, Nigeria</strong><small>${weatherText}</small></span>${icon('chevron',14)}
+       </button>
+     </section>
+     <section class="v5-assistant" aria-labelledby="v5-assistant-title">
+       <div class="v5-assistant-head"><div><span class="v5-section-kicker">YOUR PERSONAL FARM ADVISOR</span>
+         <h2 id="v5-assistant-title">What can I help you grow?</h2></div><span class="v5-assistant-mark">${icon('spark',20)}</span></div>
+       <form id="home-ai-form" class="v5-prompt-form">
+         <label class="sr-only" for="home-question">Ask SYSMART AI a farming question</label>
+         <textarea id="home-question" rows="2" maxlength="3000" placeholder="Ask about crops, pests, irrigation, soil or your next harvest…"></textarea>
+         <div class="v5-prompt-footer"><span>${icon('leaf',15)} SYSMART AI Advisor</span><button type="submit" aria-label="Send your question">Ask AI ${icon('arrow',17)}</button></div>
+       </form>
+       <div class="v5-prompt-suggestions" aria-label="Suggested farming questions">
+         <button data-action="suggest" data-question="How can I prevent tomato leaf diseases during the rainy season?">Tomato leaf care ${icon('arrow',13)}</button>
+         <button data-action="suggest" data-question="Help me plan irrigation for maize in Kano this month.">Irrigation planning ${icon('arrow',13)}</button>
+       </div>
+     </section>
+     <section class="v5-services" aria-labelledby="v5-services-title">
+       <div class="v5-section-head"><div><span class="v5-section-kicker">ESSENTIAL FARM TOOLS</span><h2 id="v5-services-title">Everything for your field.</h2></div><span class="v5-head-note">Choose a tool to get started</span></div>
+       <div class="v5-tool-grid">
+         <button class="v5-tool" data-page="plant"><span class="v5-tool-icon">${icon('doctor',23)}</span><strong>Plant Doctor</strong><small>Understand crop problems from a photo</small><span class="v5-tool-more">${icon('arrow',17)}</span></button>
+         <button class="v5-tool" data-page="planner"><span class="v5-tool-icon">${icon('calendar',23)}</span><strong>Crop Planner</strong><small>Plan planting dates and growing stages</small><span class="v5-tool-more">${icon('arrow',17)}</span></button>
+         <button class="v5-tool" data-page="weather"><span class="v5-tool-icon">${icon('cloud',23)}</span><strong>Weather</strong><small>Get local weather and rainfall forecasts</small><span class="v5-tool-more">${icon('arrow',17)}</span></button>
+         <button class="v5-tool" data-page="records"><span class="v5-tool-icon">${icon('finance',23)}</span><strong>Farm Records</strong><small>Keep track of costs and farm income</small><span class="v5-tool-more">${icon('arrow',17)}</span></button>
+       </div>
+     </section>
+     <section class="v5-fields" aria-labelledby="v5-fields-title">
+       <div class="v5-section-head"><div><span class="v5-section-kicker">YOUR WORKSPACE</span><h2 id="v5-fields-title">My farms ${active.length?`<span class="v5-count">${active.length}</span>`:''}</h2></div><button class="v5-text-link" data-page="farms">View all ${icon('arrow',16)}</button></div>
+       ${active.length?`<div class="v5-farm-list">${active.slice(0,2).map(f=>`<button data-action="view-farm" data-id="${esc(f.id)}" class="v5-farm-row"><span class="v5-farm-thumb" style="background-image:url('${photoFor(f.crop)}')"></span><span><strong>${esc(f.name)}</strong><small>${cropName(f.crop)} · ${formatNumber(f.area)} ha · ${esc(f.location)}</small></span>${icon('chevron',17)}</button>`).join('')}</div>`:
+       `<div class="v5-first-farm"><span class="v5-first-farm-icon">${icon('farm',23)}</span><div><strong>Your farm, all in one place.</strong><p>Add your first farm to organize crops, activities and records.</p></div><button type="button" data-action="add-farm">${icon('plus',16)} Add farm</button></div>`}
+     </section>
+     <div class="v5-trust">${icon('shield',15)} Farming recommendations are guidance, not a confirmed diagnosis. Verify important treatments locally. <span>from SYLUTION</span></div>
+   </div>
  </div>`;
 }
 function heading(eyebrow,title,subtitle,action=''){return `<div class="page-heading"><div><span class="eyebrow green">${eyebrow}</span><h1>${title}</h1><p>${subtitle}</p></div>${action}</div>`}
