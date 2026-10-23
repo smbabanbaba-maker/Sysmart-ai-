@@ -293,8 +293,15 @@ function readPhoto(file){
     canvas.height=Math.max(1,Math.round(picture.height*ratio));
     canvas.getContext('2d').drawImage(picture,0,0,canvas.width,canvas.height);
     let encoded=canvas.toDataURL('image/jpeg',.83);
-    if(encoded.length>5_200_000)encoded=canvas.toDataURL('image/jpeg',.68);
-    if(encoded.length>5_200_000){notify('This photo is too large after processing. Try another photo.','error');return;}
+    if(encoded.length>4_000_000)encoded=canvas.toDataURL('image/jpeg',.65);
+    if(encoded.length>4_000_000){
+     const secondRatio=Math.min(1,1350/Math.max(picture.width,picture.height));
+     canvas.width=Math.max(1,Math.round(picture.width*secondRatio));
+     canvas.height=Math.max(1,Math.round(picture.height*secondRatio));
+     canvas.getContext('2d').drawImage(picture,0,0,canvas.width,canvas.height);
+     encoded=canvas.toDataURL('image/jpeg',.62);
+    }
+    if(encoded.length>4_000_000){notify('This photo is too large after processing. Try another photo.','error');return;}
     ui.photo=encoded;
     ui.plantResult=null;
     ui.plantError='';
