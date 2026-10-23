@@ -102,11 +102,11 @@ function weatherPanel(){
  const valid=c?.temperature_2m!==undefined&&c?.temperature_2m!==null&&Number.isFinite(Number(c.temperature_2m));
  const prob=day?.precipitation_probability_max?.[0];
  const updated=ui.weatherFetchedAt&&!isNaN(Date.parse(ui.weatherFetchedAt))?new Date(ui.weatherFetchedAt).toLocaleTimeString("en-NG",{hour:"numeric",minute:"2-digit"}):"";
- const days=valid&&day?.time?.length?day.time.slice(0,3).map((d,i)=>`<span class="v6-day"><small>${i===0?"Today":new Intl.DateTimeFormat("en-NG",{weekday:"short"}).format(new Date(d+"T12:00:00"))}</small>${icon(weatherIcon(day.weather_code?.[i]??c.weather_code),16)}<b>${weatherNumber(day.temperature_2m_max?.[i],"°")}</b></span>`).join(""):"";
+ const days=valid&&day?.time?.length?day.time.slice(0,3).map((d,i)=>`<span class="v6-day v8-day-${weatherIcon(day.weather_code?.[i]??c.weather_code)}"><small>${i===0?"Today":new Intl.DateTimeFormat("en-NG",{weekday:"short"}).format(new Date(d+"T12:00:00"))}</small>${icon(weatherIcon(day.weather_code?.[i]??c.weather_code),16)}<b>${weatherNumber(day.temperature_2m_max?.[i],"°")}</b></span>`).join(""):"";
  return `<section class="v6-weather" aria-label="Local weather for ${esc(state.profile.city)}">
  <div class="v6-w-top"><div><span class="v6-w-eyebrow">${icon("cloud",15)} LOCAL FARM WEATHER</span><h2>${icon("location",16)} ${esc(state.profile.city)}, Nigeria</h2></div><button data-action="load-weather" aria-label="Refresh weather conditions" ${ui.weatherBusy?"disabled":""}>${icon("arrow",16)} ${ui.weatherBusy?"Updating":"Refresh"}</button></div>
- ${valid?`<div class="v6-w-main"><div class="v6-w-current"><span class="v6-w-condition-icon">${icon(weatherIcon(c.weather_code),40)}</span><div><strong>${weatherNumber(c.temperature_2m,"°")}<small>C</small></strong><span>${esc(weatherLabel(c.weather_code))}</span></div></div>
- <div class="v6-w-stats"><div><span>${icon("drop",15)} Humidity</span><strong>${weatherNumber(c.relative_humidity_2m,"%")}</strong></div><div><span>${icon("cloud",15)} Rain chance <sup>today</sup></span><strong>${weatherNumber(prob,"%")}</strong></div><div><span>${icon("wind",15)} Wind speed</span><strong>${weatherNumber(c.wind_speed_10m)} <small>km/h</small></strong></div></div></div>
+ ${valid?`<div class="v6-w-main"><div class="v6-w-current"><span class="v6-w-condition-icon v8-weather-${weatherIcon(c.weather_code)}">${icon(weatherIcon(c.weather_code),40)}</span><div><strong>${weatherNumber(c.temperature_2m,"°")}<small>C</small></strong><span>${esc(weatherLabel(c.weather_code))}</span></div></div>
+ <div class="v6-w-stats"><div class="v8-humidity"><span>${icon("drop",15)} Humidity</span><strong>${weatherNumber(c.relative_humidity_2m,"%")}</strong></div><div class="v8-rain"><span>${icon("cloud",15)} Rain chance <sup>today</sup></span><strong>${weatherNumber(prob,"%")}</strong></div><div class="v8-wind"><span>${icon("wind",15)} Wind speed</span><strong>${weatherNumber(c.wind_speed_10m)} <small>km/h</small></strong></div></div></div>
  <div class="v6-w-forecast">${days?`<div class="v6-w-days">${days}</div>`:""}<button data-page="weather">Full forecast ${icon("arrow",15)}</button></div>`:
  `<div class="v6-w-offline"><span>${icon("cloud",30)}</span><div><strong>${ui.weatherBusy?"Fetching local conditions…":"Weather data unavailable"}</strong><p>${ui.weatherBusy?"Connecting to the forecast provider.":ui.weatherError?"Check your connection and try again.":"Tap Refresh to load local temperature and forecast."}</p></div><button data-action="load-weather" ${ui.weatherBusy?"disabled":""}>${ui.weatherBusy?"Loading…":"Try again"}</button></div>`}
  <div class="v6-w-credit"><i class="${ui.weatherStale?"stale":""}"></i>${ui.weatherBusy?"Updating…":valid?(ui.weatherStale?"Saved forecast":"Forecast updated"):"Not loaded"}${updated?" · "+updated:""}<span>Open-Meteo · Forecast estimates</span></div></section>`;
@@ -120,15 +120,14 @@ let weatherRequestId=0;
 function weatherCityChanged(){weatherRequestId++;ui.weather=null;ui.weatherCity=null;ui.weatherBusy=false;ui.weatherError='';cachedForecast();render();loadForecast();}
 function home(){
  const active=state.farms.filter(f=>!f.demo);
- const current=ui.weather?.current;
- const hasWeather=!!current&&Number.isFinite(Number(current.temperature_2m));
- const weatherText=hasWeather?`${Math.round(current.temperature_2m)}°C · ${esc(weatherLabel(current.weather_code))}`:'View local forecast';
+  const localHour=new Date().getHours();
+ const greeting=localHour<12?'Good morning':localHour<17?'Good afternoon':'Good evening';
  return `<div class="v5-home" aria-label="SYSMART AI farming workspace">
    <div class="v5-main">
      <header class="v7-home-intro" aria-label="Farm overview">
-       <div><span class="v7-home-kicker">${icon('leaf',14)} YOUR FARM AT A GLANCE</span>
-       <h1>Farm overview<span class="v7-home-title-dot">.</span></h1>
-       <p>Local weather and the tools you need to grow better.</p></div>
+       <div><span class="v7-home-kicker">${icon('leaf',14)} YOUR FARM OVERVIEW</span>
+       <h1>${greeting}, ${firstName()}<span class="v7-home-title-dot">.</span></h1>
+       <p>Everything your farm needs, beautifully organized.</p></div>
        <button class="v7-intro-link" data-page="farms" aria-label="Open your farms">${icon('farm',16)} My farms ${icon('arrow',15)}</button>
      </header>
      ${weatherPanel()}
