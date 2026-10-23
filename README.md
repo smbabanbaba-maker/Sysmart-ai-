@@ -2,6 +2,15 @@
 
 SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and beyond. The home interface is dark forest green with a responsive dashboard, quick AI advice, practical farming tools and real field photography. All interface text is in English.
 
+## Version 0.6.0 — Real weather intelligence on Home
+
+- Automatic weather for the selected Nigerian city, showing actual forecast temperature, humidity, wind speed, today's highest forecast rain probability and a three-day outlook.
+- Includes refresh, forecast detail, Open-Meteo attribution and the data update time. Values are not fabricated.
+- Most recent reading is cached for up to 15 minutes; if a refresh fails, saved weather is marked as such instead of mislabeling it as live.
+- A location change in Settings or on the Weather page refreshes the Home card.
+- Works across phones, tablets and desktop widths; no weather API key required.
+- MVP AI Advisor and Plant Doctor still need a configured server-side API key.
+
 ## Version 0.5.0 — Premium forest redesign
 
 - Home has a single dark, photographic hero, one prominent AI question composer and four essential farming actions.
