@@ -125,19 +125,16 @@ function home(){
  const weatherText=hasWeather?`${Math.round(current.temperature_2m)}°C · ${esc(weatherLabel(current.weather_code))}`:'View local forecast';
  return `<div class="v5-home" aria-label="SYSMART AI farming workspace">
    <div class="v5-main">
-     <section class="v5-hero" aria-labelledby="v5-hero-heading">
-       <div class="v5-hero-image" role="img" aria-label="Real photograph of growing crops on a cultivated farm"></div>
-       <div class="v5-hero-content">
-         <div class="v5-eyebrow"><span class="v5-live-dot"></span> YOUR AGRICULTURAL INTELLIGENCE</div>
-         <h1 id="v5-hero-heading">Grow smarter.<br><em>Every season.</em></h1>
-         <p>Practical AI guidance for healthier crops, better planning and confident farm decisions.</p>
-         <button type="button" class="v5-hero-link" data-page="plant">Explore crop health ${icon('arrow',17)}</button>
-       </div>
-     </section>
+     <header class="v7-home-intro" aria-label="Farm overview">
+       <div><span class="v7-home-kicker">${icon('leaf',14)} YOUR FARM AT A GLANCE</span>
+       <h1>Farm overview<span class="v7-home-title-dot">.</span></h1>
+       <p>Local weather and the tools you need to grow better.</p></div>
+       <button class="v7-intro-link" data-page="farms" aria-label="Open your farms">${icon('farm',16)} My farms ${icon('arrow',15)}</button>
+     </header>
      ${weatherPanel()}
      <section class="v5-assistant" aria-labelledby="v5-assistant-title">
-       <div class="v5-assistant-head"><div><span class="v5-section-kicker">YOUR PERSONAL FARM ADVISOR</span>
-         <h2 id="v5-assistant-title">What can I help you grow?</h2></div><span class="v5-assistant-mark">${icon('spark',20)}</span></div>
+       <div class="v5-assistant-head"><div><span class="v5-section-kicker">SYSMART AI ADVISOR</span>
+         <h2 id="v5-assistant-title">Ask about your farm</h2></div><span class="v5-assistant-mark">${icon('spark',20)}</span></div>
        <form id="home-ai-form" class="v5-prompt-form">
          <label class="sr-only" for="home-question">Ask SYSMART AI a farming question</label>
          <textarea id="home-question" rows="2" maxlength="3000" placeholder="Ask about crops, pests, irrigation, soil or your next harvest…"></textarea>
@@ -149,7 +146,7 @@ function home(){
        </div>
      </section>
      <section class="v5-services" aria-labelledby="v5-services-title">
-       <div class="v5-section-head"><div><span class="v5-section-kicker">ESSENTIAL FARM TOOLS</span><h2 id="v5-services-title">Everything for your field.</h2></div><span class="v5-head-note">Choose a tool to get started</span></div>
+       <div class="v5-section-head"><div><span class="v5-section-kicker">ESSENTIAL FARM TOOLS</span><h2 id="v5-services-title">Farm tools</h2></div><span class="v5-head-note"></span></div>
        <div class="v5-tool-grid">
          <button class="v5-tool" data-page="plant"><span class="v5-tool-icon">${icon('doctor',23)}</span><strong>Plant Doctor</strong><small>Understand crop problems from a photo</small><span class="v5-tool-more">${icon('arrow',17)}</span></button>
          <button class="v5-tool" data-page="planner"><span class="v5-tool-icon">${icon('calendar',23)}</span><strong>Crop Planner</strong><small>Plan planting dates and growing stages</small><span class="v5-tool-more">${icon('arrow',17)}</span></button>
