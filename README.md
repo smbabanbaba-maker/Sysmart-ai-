@@ -2,9 +2,9 @@
 
 A premium, English-language, responsive farming dashboard for mobile and desktop, designed for Nigerian and African growers. This is a working **MVP** with a real responsive app interface; it is not a fully connected AI or IoT production platform yet.
 
-## What's new in 0.2.0
+## What's new in 0.3.0
 
-- Redesigned green-and-white dashboard with dark-forest desktop sidebar and compact mobile navigation.
+- Fully rebuilt home dashboard: cinematic authentic-farm photography, clean hierarchy, prominent AI Advisor, four farm tool shortcuts, accurate farm metrics, activity-aware farm portfolio and weather check.\n- Responsive 320px–desktop home layout with accessible 44px actions, no horizontal overflow, and preserved navigation and storage.\n- Dark-forest desktop sidebar and compact mobile navigation.
 - Real agricultural photography supplied through the Unsplash photo CDN, with color fallbacks when offline.
 - English throughout the UI, app controls, dialogs, form labels, notices, crop planning and forecast labels.
 - Mobile-first touch targets, tablet breakpoints, safe-area padding on iOS, responsive cards and scrolling charts.
