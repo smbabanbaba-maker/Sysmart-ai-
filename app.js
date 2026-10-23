@@ -2,7 +2,7 @@ import { CITIES, CROPS, money, escapeHtml as esc, totals, safeDate, createPlan, 
 
 const STORAGE_KEY = 'sysmart-ai-mvp-v1';
 const PHOTO = {
-  landscape: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1700&q=82',
+  landscape: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1700&q=80',
   rows: 'https://images.unsplash.com/photo-1719757168062-3ceb06988532?auto=format&fit=crop&w=900&q=80',
   farm: 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=900&q=80',
   tomato: 'https://images.unsplash.com/photo-1546470427-e26264be0b0d?auto=format&fit=crop&w=900&q=80',
@@ -79,10 +79,115 @@ function cover(f){return `<div class="farm-image" style="background-image:linear
 function farmCard(f){return `<button data-action="view-farm" data-id="${esc(f.id)}" class="farm-tile">${cover(f)}<div class="farm-tile-content"><div class="farm-tile-title"><strong>${esc(f.name)}</strong>${f.demo?'<span class="sample-chip">SAMPLE</span>':''}</div><p>${icon('location',14)} ${esc(f.location)} · ${formatNumber(f.area)} hectares</p><div class="farm-tile-bottom"><span>${cropInfo(f.crop).emoji} ${cropName(f.crop)}</span>${icon('arrow',16)}</div></div></button>`}
 function statTile(label,value,meta,ic,kind=''){return `<div class="stat-tile"><div class="stat-icon ${kind}">${icon(ic,21)}</div><div class="stat-copy"><span>${label}</span><strong>${value}</strong><small>${meta}</small></div></div>`}
 function feature(p,i,title,subtitle,kind){return `<button data-page="${p}" class="quick-tile"><span class="quick-icon ${kind}">${icon(i,22)}</span><span><strong>${title}</strong><small>${subtitle}</small></span>${icon('chevron',17)}</button>`}
-function home(){const t=totals(state.transactions);return `<div class="workspace-page dashboard-page"><div class="welcome-row"><div><div class="eyebrow green">YOUR FARMING WORKSPACE</div><h1>Good morning, ${firstName()} <span class="wave">👋</span></h1><p>Here's what's happening on your farm today.</p></div><button class="primary-button new-farm" data-action="add-farm">${icon('plus',17)} Add New Farm</button></div>${demoBanner()}
-<section class="dashboard-hero"><div class="hero-photo" role="img" aria-label="Real photograph of farmland"><span class="photo-label">SYSMART AI · FROM SYLUTION</span><h2>Smarter farming.<br>Brighter harvests.</h2><p>Everything you need to manage, protect and grow your farm — in one intelligent workspace.</p><button class="hero-button" data-page="chat">Talk to your AI Advisor ${icon('arrow',17)}</button></div><div class="hero-side"><div class="hero-small-eyebrow">WELCOME BACK</div><h3>Your farm, more connected.</h3><p>Get crop guidance, check growing conditions and stay on top of farm finances.</p><div class="hero-side-features"><span>${icon('leaf',18)} Plant health insights</span><span>${icon('cloud',18)} Weather forecasts</span><span>${icon('finance',18)} Financial tracking</span></div></div></section>
-<div class="section-label-row"><div><div class="eyebrow">FARM PERFORMANCE</div><h2>At a glance</h2></div><span class="section-helper">Calculated from saved records</span></div><div class="stats-grid">${statTile('Active Farms',String(state.farms.length),'Farms in your workspace','farm')}${statTile('Farm Revenue',money(t.income),'From recorded transactions','wallet','mint')}${statTile('Farm Expenses',money(t.expenses),'From recorded transactions','finance','peach')}${statTile('Net Balance',money(t.profit),'Revenue less expenses','bars','mint')}</div>
-<div class="dash-layout"><div class="dash-primary"><div class="section-label-row"><div><div class="eyebrow">FARM PORTFOLIO</div><h2>My Farms <span class="count">${state.farms.length}</span></h2></div><button class="subtle-link" data-page="farms">View all farms ${icon('arrow',15)}</button></div><div class="farm-cards">${state.farms.length?state.farms.slice(0,3).map(farmCard).join(''):`<div class="empty-card"><h3>Your first farm starts here</h3><p>Add your farm to organize crops, planting dates and finances.</p><button data-action="add-farm" class="primary-button">Add a farm</button></div>`}</div><div class="section-label-row quick-heading"><div><div class="eyebrow">YOUR TOOLS</div><h2>Quick Actions</h2></div><button class="subtle-link" data-page="chat">Ask AI ${icon('arrow',14)}</button></div><div class="quick-actions">${feature('plant','doctor','Plant Doctor','Analyze crop photos','mint')}${feature('chat','chat','AI Advisor','Ask farming questions','sky')}${feature('planner','calendar','Crop Planner','Plan a crop cycle','peach')}${feature('records','finance','Farm Records','Income and expenses','lavender')}${feature('sensors','sensor','Smart Monitoring','IoT integration status','mint')}${feature('market','market','Marketplace','Explore selling tools','sky')}</div></div><div class="dash-aside"><section class="widget weather-widget"><div class="widget-title"><h3>Weather Forecast</h3><span>${icon('location',14)} ${esc(state.profile.city)}</span></div>${ui.weather?`<div class="weather-reading">${icon('sun',35)}<span><strong>${Math.round(ui.weather.current.temperature_2m)}°C</strong><small>${esc(weatherLabel(ui.weather.current.weather_code))}</small></span></div><div class="weather-details"><span>${icon('drop',16)} Humidity ${ui.weather.current.relative_humidity_2m}%</span><span>${icon('wind',16)} Wind ${ui.weather.current.wind_speed_10m} km/h</span></div>`:`<div class="weather-reading">${icon('cloud',38)}<span><strong>Local weather</strong><small>${ui.weatherBusy?'Loading forecast…':'Live conditions on demand'}</small></span></div>${ui.weatherError?`<div class="inline-error">${esc(ui.weatherError)}</div>`:''}`}<button class="light-action" data-action="load-weather">${icon('cloud',16)} ${ui.weather?'Refresh weather':'View live forecast'} ${icon('arrow',15)}</button></section><section class="widget insights-widget"><div class="widget-title"><h3>AI Farming Insights</h3>${icon('spark',19)}</div><div class="insight-item"><span class="insight-symbol">${icon('leaf',20)}</span><div><strong>Scout crops regularly</strong><p>Look for leaf damage and irrigation stress before problems spread.</p></div></div><div class="insight-item"><span class="insight-symbol blue">${icon('finance',20)}</span><div><strong>Stay on top of costs</strong><p>Track each expense against the farm that incurred it.</p></div></div><button class="subtle-link" data-page="chat">Get personalized guidance ${icon('arrow',15)}</button></section></div></div><div class="bottom-note">${icon('shield',15)} SYSMART AI is a decision-support tool. Verify high-impact agronomic advice with a qualified local professional.</div></div>`}
+
+function dashboardTool(page, symbol, title, detail, skin) {
+  return `<button class="dash3-tool dash3-tool-${skin}" data-page="${page}">
+    <span class="dash3-tool-icon">${icon(symbol,23)}</span>
+    <span class="dash3-tool-copy"><strong>${title}</strong><small>${detail}</small></span>
+    <span class="dash3-tool-arrow">${icon('arrow',17)}</span>
+  </button>`;
+}
+function dashboardMetric(symbol, title, value, description, tint) {
+  return `<div class="dash3-metric dash3-metric-${tint}">
+    <div class="dash3-metric-upper"><span class="dash3-metric-icon">${icon(symbol,19)}</span><span class="dash3-metric-label">${title}</span></div>
+    <strong>${value}</strong><small>${description}</small>
+  </div>`;
+}
+function home(){
+  const t = totals(state.transactions);
+  const weather = ui.weather?.current;
+  const hasWeather = weather && Number.isFinite(Number(weather.temperature_2m));
+  const weatherSymbol = hasWeather ? `${Math.round(weather.temperature_2m)}°C` : '—';
+  const weatherDescription = hasWeather ? esc(weatherLabel(weather.weather_code)) : 'Tap to check live conditions';
+  const dateLabel = new Intl.DateTimeFormat('en-NG',{month:'long',day:'numeric',year:'numeric'}).format(new Date());
+  return `<div class="workspace-page dashboard-page dash3">
+    <section class="dash3-intro" aria-label="Welcome">
+      <div class="dash3-intro-copy">
+        <div class="dash3-kicker"><span class="dash3-kicker-dot"></span> YOUR FARMING WORKSPACE</div>
+        <h1>Welcome back, ${firstName()} <span aria-hidden="true">👋</span></h1>
+        <p>A smarter way to care for your crops and manage your farm.</p>
+      </div>
+      <button class="dash3-add" data-action="add-farm">${icon('plus',18)} <span>Add a farm</span></button>
+    </section>
+    <section class="dash3-hero" aria-label="Explore SYSMART AI">
+      <img class="dash3-hero-image" src="${PHOTO.landscape}" alt="Real photograph of cultivated green farmland" loading="eager" fetchpriority="high">
+      <div class="dash3-hero-shade"></div>
+      <div class="dash3-hero-content">
+        <span class="dash3-hero-eyebrow">${icon('leaf',16)} SYSMART AI <span>·</span> FROM SYLUTION</span>
+        <h2>Make every<br><em>season count.</em></h2>
+        <p>Plan your crops, understand your fields, and make confident farming decisions—all in one place.</p>
+        <div class="dash3-hero-buttons">
+          <button data-page="chat" class="dash3-hero-primary">Ask your AI Advisor ${icon('arrow',18)}</button>
+          <button data-page="planner" class="dash3-hero-secondary">Plan a crop</button>
+        </div>
+      </div>
+      <div class="dash3-hero-tag">${icon('shield',15)} Practical guidance for growers</div>
+    </section>
+    <section class="dash3-actions-block" aria-labelledby="dash3-actions-title">
+      <div class="dash3-section-heading">
+        <div><span class="dash3-overline">MADE FOR YOUR FARM</span><h2 id="dash3-actions-title">What would you like to do?</h2></div>
+        <span class="dash3-heading-subtitle">Start here</span>
+      </div>
+      <div class="dash3-tool-grid">
+        ${dashboardTool('plant','doctor','Plant Doctor','Check a crop photo','leaf')}
+        ${dashboardTool('chat','spark','AI Farm Advisor','Ask anything about farming','violet')}
+        ${dashboardTool('weather','cloud','Weather Forecast','Plan for local conditions','blue')}
+        ${dashboardTool('planner','calendar','Crop Planner','Map your growing season','amber')}
+      </div>
+    </section>
+    <section class="dash3-performance" aria-labelledby="dash3-performance-title">
+      <div class="dash3-section-heading">
+        <div><span class="dash3-overline">YOUR FARM AT A GLANCE</span><h2 id="dash3-performance-title">Farm overview</h2></div>
+        <button class="dash3-text-action" data-page="records">View records ${icon('arrow',15)}</button>
+      </div>
+      <div class="dash3-metrics">
+        ${dashboardMetric('farm','My Farms',String(state.farms.length),'Farms in your workspace','green')}
+        ${dashboardMetric('wallet','Total Revenue',money(t.income),'From saved entries','blue')}
+        ${dashboardMetric('finance','Total Expenses',money(t.expenses),'From saved entries','orange')}
+        ${dashboardMetric('bars','Net Balance',money(t.profit),'Revenue minus expenses','purple')}
+      </div>
+    </section>
+    <div class="dash3-content-columns">
+      <section class="dash3-myfarms" aria-labelledby="dash3-farms-title">
+        <div class="dash3-section-heading">
+          <div><span class="dash3-overline">GROWING WITH YOU</span><h2 id="dash3-farms-title">Your farms <span class="dash3-counter">${state.farms.length}</span></h2></div>
+          <button class="dash3-text-action" data-page="farms">See all ${icon('arrow',15)}</button>
+        </div>
+        <div class="dash3-farm-list">
+          ${state.farms.length ? state.farms.slice(0,3).map(f=>`<button class="dash3-farm-card" data-action="view-farm" data-id="${esc(f.id)}">
+            <span class="dash3-farm-photo" style="background-image:url('${photoFor(f.crop)}')">
+              <span class="dash3-farm-status">${icon('check',12)} ${esc(f.status||'Growing')}</span>
+            </span>
+            <span class="dash3-farm-copy"><strong>${esc(f.name)}</strong>
+              <small>${icon('location',13)} ${esc(f.location)}, Nigeria</small>
+              <span class="dash3-farm-meta">${cropName(f.crop)} <i></i> ${formatNumber(f.area)} ha ${f.demo?'<em>Sample</em>':''}</span>
+            </span>
+            <span class="dash3-farm-chevron">${icon('chevron',19)}</span>
+          </button>`).join('') :
+          `<div class="dash3-empty"><span class="dash3-empty-symbol">${icon('farm',24)}</span><h3>Start with your first farm</h3><p>Add a field to track crops, activities, and financial records.</p><button class="dash3-add" data-action="add-farm">${icon('plus',16)} Add your farm</button></div>`}
+        </div>
+      </section>
+      <aside class="dash3-aside">
+        <section class="dash3-weather-panel">
+          <div class="dash3-weather-heading"><span>${icon('cloud',18)} WEATHER CHECK</span><button data-page="weather">${icon('arrow',17)}</button></div>
+          <div class="dash3-weather-body"><span class="dash3-weather-symbol">${icon('sun',32)}</span>
+            <div><strong>${weatherSymbol}</strong><small>${weatherDescription}</small></div></div>
+          <div class="dash3-weather-location">${icon('location',15)} ${esc(state.profile.city)}, Nigeria</div>
+          ${ui.weatherError?`<p class="dash3-weather-error">${esc(ui.weatherError)}</p>`:''}
+          <button class="dash3-weather-button" data-action="load-weather">${icon('cloud',16)} ${ui.weatherBusy?'Loading forecast…':hasWeather?'Refresh forecast':'Check live forecast'} ${icon('arrow',15)}</button>
+        </section>
+        <section class="dash3-tip-panel"><span class="dash3-tip-icon">${icon('leaf',20)}</span>
+          <div><span class="dash3-overline">FIELD NOTES</span><h3>A little attention goes a long way.</h3><p>Inspect leaves regularly, track water use, and record expenses as they happen.</p>
+            <button data-page="chat">Get tailored guidance ${icon('arrow',16)}</button></div>
+        </section>
+      </aside>
+    </div>
+    <div class="dash3-bottom">
+      ${demoBanner()}
+      <div class="dash3-legal">${icon('shield',15)} SYSMART AI supports your decisions. Confirm important treatment advice with a qualified local specialist. <span>${dateLabel}</span></div>
+    </div>
+  </div>`;
+}
 function heading(eyebrow,title,subtitle,action=''){return `<div class="page-heading"><div><span class="eyebrow green">${eyebrow}</span><h1>${title}</h1><p>${subtitle}</p></div>${action}</div>`}
 function farms(){return `<div class="workspace-page">${heading('FARM MANAGEMENT','My Farms','Everything you need to keep your fields organized.',`<button class="primary-button" data-action="add-farm">${icon('plus',18)} Add New Farm</button>`)}${demoBanner()}<div class="summary-strip">${icon('leaf',22)}<div><strong>${state.farms.length} farms in your workspace</strong><p>View planting dates, crop types and saved farm details.</p></div></div><div class="farms-gallery">${state.farms.length?state.farms.map(farmCard).join(''):`<div class="empty-card"><h3>No farms added yet</h3><p>Add your first farm to get started.</p><button class="primary-button" data-action="add-farm">Add Farm</button></div>`}</div></div>`}
 const activeChat=()=>state.chats.find(c=>c.id===state.activeChat)||state.chats[0];
