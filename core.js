@@ -49,21 +49,21 @@ export function createPlan(crop,area,start,irrigation) {
   return {
     crop:selected.name, area:hectares, irrigation, start, expectedHarvest:add(selected.cycle),
     milestones:[
-      {day:0,date:add(0),title:'Shirya ƙasa da shuka / Prepare land and plant',detail:'Confirm soil test, seed quality, season and planting spacing locally.'},
-      {day:14,date:add(14),title:'Duba tsiro / Check emergence',detail:'Inspect emergence, weeds and crop stand; keep a photo record.'},
-      {day:Math.round(selected.cycle*.35),date:add(Math.round(selected.cycle*.35)),title:'Duba lafiyar shuka / Crop health inspection',detail:'Scout for pests, symptoms and moisture stress. Test before nutrient application.'},
-      {day:Math.round(selected.cycle*.68),date:add(Math.round(selected.cycle*.68)),title:'Shirin girbi / Harvest readiness',detail:'Check market demand, produce maturity and storage/transport plans.'},
-      {day:selected.cycle,date:add(selected.cycle),title:'Kimanta lokacin girbi / Estimate harvest window',detail:'Indicative timing only: cultivar, weather and management can change harvest dates.'}
+      {day:0,date:add(0),title:'Prepare land and plant',detail:'Confirm soil test, seed quality, season and planting spacing locally.'},
+      {day:14,date:add(14),title:'Check crop emergence',detail:'Inspect emergence, weeds and crop stand; keep a photo record.'},
+      {day:Math.round(selected.cycle*.35),date:add(Math.round(selected.cycle*.35)),title:'Crop health inspection',detail:'Scout for pests, symptoms and moisture stress. Test before nutrient application.'},
+      {day:Math.round(selected.cycle*.68),date:add(Math.round(selected.cycle*.68)),title:'Check harvest readiness',detail:'Check market demand, produce maturity and storage/transport plans.'},
+      {day:selected.cycle,date:add(selected.cycle),title:'Estimated harvest window',detail:'Indicative timing only: cultivar, weather and management can change harvest dates.'}
     ]
   };
 }
 export function weatherLabel(code){
-  if(code===0)return 'Sunny / Sarari';
-  if([1,2,3].includes(code))return 'Partly cloudy / Gizagizai';
-  if([45,48].includes(code))return 'Fog / Hazo';
-  if([51,53,55,56,57].includes(code))return 'Drizzle / Yayafi';
-  if([61,63,65,66,67,80,81,82].includes(code))return 'Rain / Ruwa';
-  if([95,96,99].includes(code))return 'Thunderstorm / Hadari';
-  return 'Weather / Yanayi';
+  if(code===0)return 'Sunny';
+  if([1,2,3].includes(code))return 'Partly cloudy';
+  if([45,48].includes(code))return 'Fog';
+  if([51,53,55,56,57].includes(code))return 'Drizzle';
+  if([61,63,65,66,67,80,81,82].includes(code))return 'Rain';
+  if([95,96,99].includes(code))return 'Thunderstorm';
+  return 'Weather';
 }
 export function uid(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36)}

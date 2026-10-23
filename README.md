@@ -1,86 +1,46 @@
-# SYSMART AI — from SYLUTION 🌱
+# SYSMART AI — from SYLUTION
 
-**Smart farming intelligence for Nigerian and African growers.** A responsive, installable progressive web application inspired by the approved green-and-white SYSMART Agro AI showcase. Hausa-first UI, mobile/desktop workspace, and server-side agricultural AI APIs.
+A premium, English-language, responsive farming dashboard for mobile and desktop, designed for Nigerian and African growers. This is a working **MVP** with a real responsive app interface; it is not a fully connected AI or IoT production platform yet.
 
-> **MVP / prototype.** The front-end is ready to try; AI Chat and Plant Doctor require an OpenAI key on the server. Weather is fetched live from Open-Meteo. Smart IoT and FarmX marketplace integrations are clearly marked as planned, not presented as connected.
+## What's new in 0.2.0
 
-## Features
+- Redesigned green-and-white dashboard with dark-forest desktop sidebar and compact mobile navigation.
+- Real agricultural photography supplied through the Unsplash photo CDN, with color fallbacks when offline.
+- English throughout the UI, app controls, dialogs, form labels, notices, crop planning and forecast labels.
+- Mobile-first touch targets, tablet breakpoints, safe-area padding on iOS, responsive cards and scrolling charts.
+- Workspace views: Dashboard, Farm Management, Crop Planner, AI Farm Advisor, Plant Doctor, Weather, Smart Monitoring, Farm Records, Marketplace, Settings.
+- Preserves existing records and conversations stored under the prior localStorage key.
+- Sample data is explicitly labeled; there are **no invented live readings, crop diagnoses, prices or yields**.
 
-- **Dashboard:** clean green agritech design, eight quick action tiles, farms, finance snapshot, persistent navigation.
-- **AI Farm Advisor:** multi-turn chat in Hausa or English, saved locally, powered by a server-side `/api/chat` function when configured.
-- **Plant Doctor:** upload a real crop photo, crop/symptom context and request a cautious image assessment with `/api/plant-doctor`.
-- **Weather:** current readings and 5-day forecast for selectable Nigerian cities using Open-Meteo; gracefully handles network failure.
-- **Crop Planner:** indicative planting milestones and projected harvest window by crop; save local plans.
-- **My Farms:** add farms, select crops, locations, sizes and start dates; delete farms with confirmation.
-- **Farm Finance:** income/expense records, farm filters, revenue/profit summary, simple graphs and CSV export.
-- **Smart Sensors:** honest integration placeholders for irrigation/IoT — no simulated live readings.
-- **FarmX:** prepared marketplace workspace — not connected yet.
-- **Settings:** profile, default city, language preference for AI responses, remove explicitly marked sample data, full local data reset.
-- **PWA:** installable interface and cached app shell (for HTTPS deployments), responsive layout for mobile and desktop.
+## Working features
 
-## Quick start (zero npm dependencies)
+- Add and inspect farm records; delete farms with confirmation
+- Calculate farm income, expenses and net balance, add transactions and export CSV
+- Create estimated crop schedules and save plans locally
+- Fetch live weather forecasts from Open-Meteo (with a direct-source fallback)
+- Submit farm questions or plant photos to optional secure API routes (`/api/chat`, `/api/plant-doctor`)
+- Offline-friendly PWA shell and installation manifest
 
-Node.js 20+:
+## Not yet connected
 
-```bash
-npm start
-```
+- AI chat and Plant Doctor require a server-side `OPENAI_API_KEY`. **Never commit an API key or expose it in browser code.** Public endpoints must have authentication, usage caps and rate limits before opening them to real users.
+- Smart IoT devices, FarmX marketplace, account sign-in and cloud synchronization are planned, not represented as live services.
+- Browser records stay on the individual device and can be cleared by the user.
 
-Open `http://localhost:4173`. This lightweight local server previews the **front-end only**; API endpoints return a clear not-configured response. Browser data is stored in `localStorage` **on the device**, not a SYLUTION server.
+## Setup
 
-To run AI endpoints locally, use the Vercel CLI (`vercel dev`) in a standard development environment and configure the variables below. For deployment, import this GitHub repository into Vercel (root directory), with no build command required: the root `index.html` is a static app and `api/*.js` are Serverless Functions.
-
-### Environment variables
-
-Copy `.env.example` into your development environment or configure equivalent Vercel Environment Variables:
-
-- `OPENAI_API_KEY` (required for live Chat and Plant Doctor; keep server-side, **never commit the key**)
-- `OPENAI_MODEL` (optional, defaults to `gpt-4o-mini`)
-- `OPENAI_VISION_MODEL` (optional image-model override)
-- `ALLOWED_ORIGIN` (optional origin restriction; set to your production URL)
-
-AI endpoints do **not** currently include account authentication, persistent backend database, or production-grade rate limiting. **Do not publish an API key on an unrestricted public deployment.** Add user authentication, tenant isolation, logging and per-user quotas/rate limits before a public launch.
-
-## Safety and integrity
-
-- Initial farms and transactions are **DEMO EXAMPLES**, marked in UI, and can be cleared without losing user-added entries.
-- Farm finance totals are calculated from entries, **not** live revenue or banking data.
-- AI crop health analysis is preliminary; never a guaranteed diagnosis or registered pesticide recommendation.
-- Crop-plan growing windows are indicative only; verify cultivar, local environment and extension guidance.
-- Weather predictions are model forecasts and not a substitute for local conditions or official severe-weather warnings.
-- Plant images are sent to the configured AI provider when the user clicks **Analyze**; warn users in production privacy disclosures.
-- Local browser data is not cross-device synced, encrypted as a database, or backed up in the cloud.
-
-## Verification
+Node.js 20 or newer; there are no package dependencies.
 
 ```bash
+npm run preview
 npm run check
 npm test
 ```
 
-## Repository structure
+Open `http://localhost:4173` for the front-end preview. Local preview API routes return a not-configured response. On Vercel, deploy the repository root using **Framework Preset: Other**, with the included static `vercel.json` and `api/*.js` serverless handlers. Configure `OPENAI_API_KEY` in server-only environment variables for AI routes, plus authentication and abuse protection prior to public use.
 
-```text
-index.html             Entry point
-styles.css             Responsive design system
-app.js                 UI screens, navigation, forms and local state
-core.js                Crops, finance math, dates and planning logic
-api/chat.js            Agricultural AI text conversation API
-api/plant-doctor.js    Vision-based crop image advisory API
-api/weather.js         Open-Meteo proxy endpoint
-assets/                Brand icon and farm illustration
-manifest.webmanifest   Installable web app metadata
-sw.js                  Offline shell cache on HTTPS
-server.mjs             Dependency-free local preview server
-tests/                 Node unit tests
-```
+## Photos and presentation
 
-## Next milestones
+The real farm photography is delivered from [Unsplash](https://unsplash.com/license) and served via `images.unsplash.com` in the UI; it is **not AI-generated crop evidence**. These decorative photographs are separate from crop photos uploaded by farmers. The image placeholders use color backgrounds if the external photo host is unreachable. Users should only treat their own images and verified observations as diagnostic input.
 
-1. Authentication, Postgres/Supabase backend, secure storage, migration off localStorage, role controls.
-2. Curated Hausa agricultural knowledge base and verified Nigeria-specific crop guidance.
-3. Productized FarmX API integration and current market data.
-4. SYLUTION ESP32/RS485 telemetry, device provisioning and fail-safe irrigation controls.
-5. Android/iOS app distribution after usability, security and privacy reviews.
-
-**Brand:** SYSMART AI — from SYLUTION.
+Brand: **SYSMART AI — from SYLUTION**.
