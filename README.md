@@ -2,6 +2,15 @@
 
 SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and beyond. The home interface is dark forest green with a responsive dashboard, quick AI advice, practical farming tools and real field photography. All interface text is in English.
 
+## Version 0.9.0 — Photo-only Plant Doctor
+
+- Farmers can choose **Take Photo** (rear camera where available) or **Choose Photo** (gallery/device storage) and then tap **Analyze Plant**. No crop dropdown or symptoms form is required.
+- With a configured server-side vision AI key, the app attempts plant identification and explains visible symptoms, likely issue, practical low-risk steps, prevention, uncertainty, and when to seek local help.
+- The frontend compresses large Android/iPhone photos before sending them through the secure API route; no automatic image upload happens until Analyze is tapped.
+- The model is instructed not to invent a plant or disease diagnosis, claim false confidence percentages, or issue pesticide/dosing instructions.
+- The structured report and controls use responsive midnight-forest/ivory/lime styling with reduced-motion accessibility.
+- Without `OPENAI_API_KEY` in the hosting environment, a clear error is shown. No simulated plant analysis is displayed.
+
 ## Version 0.8.0 — Premium color system
 
 This release applies a single premium agricultural design language to Home, weather, navigation, and other workspaces:
