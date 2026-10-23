@@ -935,3 +935,23 @@ body{background:var(--sys-midnight)}
 @media(prefers-reduced-motion:reduce){
  .v5-home *,.sidebar .side-link,#main-content .primary-button{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* Light-form controls retain legibility under the dark application color scheme. */
+#main-content .workspace-page .widget input,
+#main-content .workspace-page .widget select,
+#main-content .workspace-page .widget textarea,
+#main-content .workspace-page .weather-settings select,
+#main-content .chat-main input,
+#main-content .chat-main textarea{
+ color-scheme:light;
+ background-color:#FFF;
+ color:#153B29;
+ border-color:#CFDECF;
+}
+#main-content .workspace-page input:focus-visible,
+#main-content .workspace-page textarea:focus-visible,
+#main-content .workspace-page select:focus-visible,
+#main-content .chat-main textarea:focus-visible{
+ outline:2px solid #2C8E5C;
+ outline-offset:2px;
+}
