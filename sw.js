@@ -1,4 +1,4 @@
-const CACHE='sysmart-ai-v7-live-farm-weather';
+const CACHE='sysmart-ai-v8-premium-theme';
 const APP_SHELL=['/','/index.html','/styles.css','/core.js','/app.js','/assets/icon.svg','/assets/field.svg'];
 self.addEventListener('install', e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP_SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
