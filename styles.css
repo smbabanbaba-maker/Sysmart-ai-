@@ -572,3 +572,51 @@ body{background:var(--v4-bg);color:var(--v4-ink)}
 /* Keep brand typography professional even without external font downloads. */
 .brand-label strong{font-family:Outfit,'DM Sans',system-ui,-apple-system,Arial,sans-serif}
 @media(max-width:780px){.mobile-brand .brand-label strong{font-family:Outfit,'DM Sans',system-ui,Arial,sans-serif}}
+
+
+/* SYSMART AI v0.6 · premium local weather */
+.v6-weather{position:relative;isolation:isolate;overflow:hidden;margin-top:18px;padding:23px 27px 16px;border-radius:23px;color:#f4fbef;background:radial-gradient(circle at 94% -20%,#285c4570,transparent 45%),linear-gradient(120deg,#103b2d,#08261d 74%);border:1px solid #bbddaf43;box-shadow:0 16px 45px #010e0a36}
+.v6-weather:before{content:"";position:absolute;z-index:-1;pointer-events:none;top:-95px;right:-70px;width:300px;height:270px;border:1px solid #c7e8b51c;border-radius:50%;box-shadow:0 0 0 50px #adceac08,0 0 0 93px #c8f6c005}
+.v6-w-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.v6-w-eyebrow{display:flex;align-items:center;gap:8px;color:#b7d9a9;letter-spacing:.16em;font-size:10px;font-weight:800}
+.v6-w-top h2{font-family:Outfit,'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;margin:9px 0 0;color:#f7fbf5;font-size:21px;letter-spacing:-.035em;font-weight:650}
+.v6-w-top h2 svg{color:#b8dbad}
+.v6-w-top>button{display:flex;align-items:center;gap:9px;background:#def4c810;color:#e5f7e2;border:1px solid #b3dbaf4b;border-radius:11px;min-height:44px;padding:9px 12px;font-size:12px;font-weight:700}
+.v6-w-top>button:hover{background:#def4c824}
+.v6-w-top>button:disabled{opacity:.6;cursor:wait}
+.v6-w-main{display:grid;grid-template-columns:minmax(220px,.85fr) minmax(0,1.45fr);gap:30px;align-items:center;padding:23px 0 22px}
+.v6-w-current{display:flex;align-items:center;gap:17px}
+.v6-w-condition-icon{width:75px;height:75px;display:grid;place-items:center;flex-shrink:0;background:#bce5c01a;border:1px solid #bce5c02e;border-radius:20px;color:#e4f6b8}
+.v6-w-current>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.v6-w-current strong{font-family:Outfit,'DM Sans',sans-serif;display:flex;align-items:baseline;gap:5px;font-weight:600;font-size:clamp(51px,5vw,74px);line-height:1;letter-spacing:-.075em;color:#fff;font-variant-numeric:tabular-nums}
+.v6-w-current strong small{font-size:19px;font-weight:500;color:#badcad;letter-spacing:0}
+.v6-w-current>div>span{font-size:13px;color:#c1dabe}
+.v6-w-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.v6-w-stats>div{min-width:0;background:#d8edcd0d;border:1px solid #d8edcd1f;padding:15px 12px;border-radius:14px}
+.v6-w-stats>div>span{display:flex;align-items:center;gap:6px;color:#aac9ae;font-size:11px;font-weight:600;white-space:nowrap}
+.v6-w-stats>div>span svg{color:#c0e8ad;flex-shrink:0}
+.v6-w-stats sup{font-size:8px;opacity:.72;margin-left:-3px}
+.v6-w-stats strong{font-family:Outfit,'DM Sans',sans-serif;display:block;margin-top:13px;font-size:26px;color:#f6fff3;line-height:1.1;font-weight:650;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.v6-w-stats strong small{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:#aacbab;letter-spacing:0}
+.v6-w-forecast{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0 3px;border-top:1px solid #d0e7c325}
+.v6-w-days{display:flex;align-items:center;gap:13px;min-width:0}
+.v6-day{display:flex;align-items:center;gap:8px;padding-right:14px;border-right:1px solid #d1e8cd25;white-space:nowrap}
+.v6-day:last-child{border-right:0}
+.v6-day small{color:#adcab3;font-size:11px;font-weight:500}
+.v6-day svg{color:#ddf0b7}
+.v6-day b{font-size:13px;color:#f4ffef}
+.v6-w-forecast>button{display:flex;align-items:center;gap:8px;white-space:nowrap;background:transparent;border:0;color:#def2bf;font-size:12px;font-weight:750;padding:9px 0}
+.v6-w-forecast>button:hover{color:white}
+.v6-w-credit{border-top:1px solid #d0e7c31d;margin-top:13px;padding-top:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;color:#9fbea8;font-size:10px}
+.v6-w-credit>i{width:7px;height:7px;border-radius:100%;background:#92d991;box-shadow:0 0 0 3px #92d99121;flex:none}
+.v6-w-credit>i.stale{background:#edb772;box-shadow:0 0 0 3px #edb77226}
+.v6-w-credit>span{margin-left:auto;color:#95b7a3}
+.v6-w-offline{display:flex;align-items:center;gap:16px;min-height:128px;padding:22px 0}
+.v6-w-offline>span{display:grid;place-items:center;width:58px;height:58px;flex-shrink:0;background:#d0edcf15;border:1px solid #d0edcf27;border-radius:16px;color:#d1ecbb}
+.v6-w-offline>div{flex:1;min-width:0}
+.v6-w-offline strong{color:#eef9e8;font-size:16px;font-weight:700}
+.v6-w-offline p{color:#abc6b1;font-size:12px;line-height:1.6;margin:7px 0 0}
+.v6-w-offline>button{background:#dbf0cd;border:0;border-radius:10px;padding:10px 13px;color:#113b27;font-weight:750;font-size:12px;white-space:nowrap}
+@media(max-width:1100px){.v6-w-main{grid-template-columns:1fr;gap:18px}.v6-w-days{gap:8px}.v6-day{padding-right:8px;gap:5px}}
+@media(max-width:780px){.v6-weather{margin-top:14px;border-radius:19px;padding:18px 16px 14px}.v6-w-eyebrow{font-size:9px;letter-spacing:.13em}.v6-w-top h2{font-size:18px}.v6-w-top>button{min-height:44px;font-size:11px}.v6-w-main{gap:17px;padding:17px 0}.v6-w-condition-icon{width:63px;height:63px;border-radius:17px}.v6-w-condition-icon svg{width:37px;height:37px}.v6-w-current{gap:15px}.v6-w-current strong{font-size:55px}.v6-w-current strong small{font-size:17px}.v6-w-current>div>span{font-size:12px}.v6-w-stats{gap:7px}.v6-w-stats>div{padding:11px 8px;border-radius:12px}.v6-w-stats>div>span{font-size:9px;gap:4px}.v6-w-stats>div>span svg{width:14px;height:14px}.v6-w-stats strong{font-size:21px;margin-top:10px}.v6-w-forecast{flex-wrap:wrap;align-items:stretch;padding:12px 0 0}.v6-w-days{width:100%;justify-content:space-between;gap:3px}.v6-day{flex:1;justify-content:center;gap:5px}.v6-day small{font-size:10px}.v6-day b{font-size:12px}.v6-w-forecast>button{margin-left:auto;padding-bottom:0}.v6-w-credit{margin-top:13px;font-size:9px}.v6-w-credit>span{flex-basis:100%;margin-left:13px}.v6-w-offline{flex-wrap:wrap}.v6-w-offline>button{margin-left:auto}}
+@media(max-width:355px){.v6-weather{padding:16px 12px}.v6-w-top h2{font-size:16px}.v6-w-stats>div>span{font-size:8px}.v6-w-stats strong{font-size:19px}.v6-day{gap:3px}.v6-day b{font-size:11px}}
