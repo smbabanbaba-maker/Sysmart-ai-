@@ -1,0 +1,28 @@
+name: SYSMART AI quality checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: JavaScript syntax
+        run: npm run check
+      - name: Farm business logic tests
+        run: npm test
+      - name: Check real routes and product states
+        run: |
+          test -f api/status.js
+          test -f api/plant-doctor.js
+          test -f api/weather.js
+          test -f index.html
+          node --input-type=module -e "import fs from 'node:fs';const t=fs.readFileSync('app.js','utf8');for(const k of ['function onboardingGuide','function savePlantReport','function exportBackup','async function importBackup','function loadAIStatus']){if(!t.includes(k))process.exit(1)}if(t.includes('records,sensors,market,settings'))process.exit(1);"
