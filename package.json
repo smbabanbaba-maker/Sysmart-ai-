@@ -1,7 +1,7 @@
 {
   "name": "sysmart-ai",
   "private": true,
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "SYSMART AI from SYLUTION — responsive farming intelligence PWA and Vercel API functions.",
   "type": "module",
   "scripts": {
