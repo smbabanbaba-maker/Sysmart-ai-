@@ -2,6 +2,34 @@
 
 SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and beyond. The home interface is dark forest green with a responsive dashboard, quick AI advice, practical farming tools and real field photography. All interface text is in English.
 
+## Version 1.0.0 — Farmer-first usability and reliability
+
+**Available now in the repository:**
+- A three-step first-use walkthrough with a dismiss action and an option to reopen it in Settings.
+- Plant Doctor photo capture/gallery workflow, preliminary crop-health reports, **Save report**, scan history, reports linked to farms, **Open**, **Delete** and **New scan**.
+- AI service readiness endpoint (`GET /api/status`) that reveals *only* whether the server key is configured; this does **not** prove successful model calls.
+- My Farms, Crop Planner, Weather Forecast, local Farm Records, downloadable CSV, and device-only JSON **Download backup / Restore backup**.
+- Cleaner mobile More navigation; no unreleased Smart Sensors/Marketplace pages, fake demo farms or fake financials.
+- Reduced-motion accessibility, reusable forest-green design system, updated app cache, Node 20 unit tests and GitHub Actions quality workflow.
+- Client-side photo compression, provider timeouts, error states and bounded chat request sizes.
+
+**Important launch limitations:**
+1. AI Chat and Plant Doctor require a *working*, server-side `OPENAI_API_KEY` at Vercel Settings → Environment Variables. `OPENAI_MODEL` and `OPENAI_VISION_MODEL` are optional and must be accessible to the selected account. Never commit keys.
+2. An AI key being present only means **configured**, not necessarily healthy; test a real chat request and plant photo before advertising AI as live.
+3. **No cloud accounts or cloud database are connected.** Data, including plant reports, is stored in the current browser. Export backups before switching devices or clearing storage. Reports save the structured findings; the original plant photo is not included in saved reports or backup.
+4. Weather uses Open-Meteo and may have delayed, missing or estimated forecasts. No sensor data, farm-specific rain gauge values, official alerts or buyer listings are implied.
+5. AI plant observations are screening guidance, not confirmed diagnosis. Local professionals should verify consequential crop treatment decisions.
+6. Vercel deployment `READY` alone does not guarantee API success or browser usability. Check production HTTP responses, camera permissions, actual provider access, iOS Safari and Android Chrome.
+
+**Deployment verification checklist:**
+- Set `OPENAI_API_KEY` in Production, deploy again, visit `/api/status` and verify advisor and plantDoctor appear configured.
+- Ask one benign farm question; check the request yields a genuine model response.
+- Upload a real plant photo with the user's consent; confirm a structured report, and save/open/delete it.
+- Create a farm and financial record, export JSON, use a separate browser profile to restore it, and check totals.
+- Change Weather city, disconnect the network, then verify an honest offline/unavailable message.
+- Test on Android Chrome, iOS Safari and laptop, including Back/More menus, camera permissions, accessibility and narrow screens.
+- For cross-device sync and production authentication, connect an approved database/identity provider with user-owned credentials, row-level authorization and backup policy before releasing that functionality.
+
 ## Version 0.9.0 — Photo-only Plant Doctor
 
 - Farmers can choose **Take Photo** (rear camera where available) or **Choose Photo** (gallery/device storage) and then tap **Analyze Plant**. No crop dropdown or symptoms form is required.
