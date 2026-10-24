@@ -24,17 +24,18 @@ let saved={};
 try { saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}; }catch{}
 let state={
   profile:{name:'Farmer',lang:'en',city:'Kano'},farms:[],transactions:[],
-  chats:[{id:'welcome',title:'New conversation',messages:[]}],activeChat:'welcome',plans:[],showDemo:false,
+  chats:[{id:'welcome',title:'New conversation',messages:[]}],activeChat:'welcome',plans:[],plantReports:[],onboardingSeen:false,showDemo:false,
   ...saved, profile:{name:'Farmer',lang:'en',city:'Kano',...(saved.profile||{}),lang:'en'}
 };
-for(const field of ['farms','transactions','chats','plans'])if(!Array.isArray(state[field]))state[field]=[];
+for(const field of ['farms','transactions','chats','plans','plantReports'])if(!Array.isArray(state[field]))state[field]=[];
 // Retire legacy fake demo records without affecting real user-created content.
 state.farms=state.farms.filter(x=>!x.demo);
 state.transactions=state.transactions.filter(x=>!x.demo);
 state.showDemo=false;
+state.onboardingSeen=Boolean(state.onboardingSeen);
 if(!state.chats.length)state.chats=[{id:'welcome',title:'New conversation',messages:[]}];
 if(!state.chats.some(c=>c.id===state.activeChat))state.activeChat=state.chats[0].id;
-const ui={page:'dashboard',sidebar:false,modal:null,chatInput:'',chatBusy:false,weather:null,weatherError:'',weatherBusy:false,weatherCity:null,weatherFetchedAt:null,weatherStale:false,photo:null,plantResult:null,plantError:'',plantBusy:false,plan:null,recordFilter:'all'};
+const ui={page:'dashboard',sidebar:false,modal:null,chatInput:'',chatBusy:false,weather:null,weatherError:'',weatherBusy:false,weatherCity:null,weatherFetchedAt:null,weatherStale:false,photo:null,plantResult:null,plantError:'',plantBusy:false,aiReady:null,aiChecked:false,aiError:'',plan:null,recordFilter:'all'};
 const svgPaths={
  home:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
  farm:'<path d="M3 20V9l9-6 9 6v11H3Z"/><path d="M9 20v-8h6v8"/>',leaf:'<path d="M20 4C7 4 3 10 4 17c4 5 14 4 16-13ZM3 21c4-6 8-10 14-12"/>',
@@ -118,6 +119,13 @@ function cachedForecast(){
 }
 let weatherRequestId=0;
 function weatherCityChanged(){weatherRequestId++;ui.weather=null;ui.weatherCity=null;ui.weatherBusy=false;ui.weatherError='';cachedForecast();render();loadForecast();}
+function statusChip(feature='advisor'){const connected=ui.aiReady?.[feature];return !ui.aiChecked?'<span class="app-connection pending">Checking AI</span>':connected?'<span class="app-connection active">AI connected</span>':'<span class="app-connection off">AI setup needed</span>'}
+function onboardingGuide(){if(state.onboardingSeen)return '';return `<section class="getting-started" aria-label="Getting started with SYSMART AI">
+<div class="start-head"><div><span class="v5-section-kicker">NEW TO SYSMART AI?</span><h2>Start farming smarter in 3 steps.</h2></div><button data-action="dismiss-guide" aria-label="Dismiss this guide">Got it ${icon('check',15)}</button></div>
+<div class="start-steps"><button data-page="plant"><b>1</b><span><strong>Scan a plant</strong><small>Take a photo of your crop.</small></span>${icon('arrow',15)}</button>
+<button data-page="farms"><b>2</b><span><strong>Add your farm</strong><small>Track crops and expenses.</small></span>${icon('arrow',15)}</button>
+<button data-page="chat"><b>3</b><span><strong>Ask AI</strong><small>Get help making decisions.</small></span>${icon('arrow',15)}</button></div></section>`;}
+async function loadAIStatus(){try{const res=await fetch('/api/status',{headers:{Accept:'application/json'},signal:AbortSignal.timeout(8000)});if(!res.ok)throw Error('Unavailable');const data=await res.json();ui.aiReady={advisor:data?.features?.advisor===true,plantDoctor:data?.features?.plantDoctor===true};ui.aiError='';}catch{ui.aiReady={advisor:false,plantDoctor:false};ui.aiError='AI connection status unavailable';}finally{ui.aiChecked=true;if(['dashboard','chat','plant','settings'].includes(ui.page))render();}}
 function home(){
  const active=state.farms.filter(f=>!f.demo);
   const localHour=new Date().getHours();
@@ -130,10 +138,11 @@ function home(){
        <p>Everything your farm needs, beautifully organized.</p></div>
        <button class="v7-intro-link" data-page="farms" aria-label="Open your farms">${icon('farm',16)} My farms ${icon('arrow',15)}</button>
      </header>
+     ${onboardingGuide()}
      ${weatherPanel()}
      <section class="v5-assistant" aria-labelledby="v5-assistant-title">
        <div class="v5-assistant-head"><div><span class="v5-section-kicker">SYSMART AI ADVISOR</span>
-         <h2 id="v5-assistant-title">Ask about your farm</h2></div><span class="v5-assistant-mark">${icon('spark',20)}</span></div>
+         <h2 id="v5-assistant-title">Ask about your farm</h2></div>${statusChip('advisor')}<span class="v5-assistant-mark">${icon('spark',20)}</span></div>
        <form id="home-ai-form" class="v5-prompt-form">
          <label class="sr-only" for="home-question">Ask SYSMART AI a farming question</label>
          <textarea id="home-question" rows="2" maxlength="3000" placeholder="Ask about crops, pests, irrigation, soil or your next harvest…"></textarea>
@@ -203,7 +212,7 @@ function plant(){
       <p class="pd-help">${icon('info',15)} Good photos show the leaf clearly in daylight. You can replace your photo anytime.</p>
     </section>
     <section class="pd-card pd-assessment" id="plant-assessment" aria-label="Plant Doctor assessment">
-      <div class="pd-card-heading"><span class="pd-card-icon">${icon('doctor',21)}</span><div><h2>Plant health report</h2><p>Plant identity, possible issue and next steps.</p></div></div>
+      <div class="pd-card-heading"><span class="pd-card-icon">${icon('doctor',21)}</span><div><h2>Plant health report</h2><p>Plant identity, possible issue and next steps.</p></div>${statusChip('plantDoctor')}</div>
       ${ui.plantBusy?`<div class="pd-loading" role="status"><span class="pd-spinner"></span><strong>Examining your photo</strong><p>Checking plant characteristics and visible signs…</p></div>`:result}
     </section>
   </div>
@@ -322,5 +331,6 @@ document.addEventListener('input',ev=>{if(ev.target.id==='chat-message')ui.chatI
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&ui.modal){ui.modal=null;render()}if(ev.key==='Enter'&&ev.target.id==='home-question'&&!ev.shiftKey){ev.preventDefault();document.getElementById('home-ai-form')?.requestSubmit()}if(ev.key==='Enter'&&ev.target.id==='chat-message'&&!ev.shiftKey){ev.preventDefault();document.getElementById('chat-form')?.requestSubmit()}});
 cachedForecast();
 render();
+loadAIStatus();
 if(!ui.weather||ui.weatherStale)loadForecast();
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('/sw.js').catch(()=>{});
