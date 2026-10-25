@@ -2,11 +2,12 @@ import {classifyProviderError,classifyConnectionError} from './provider-errors.j
 // Server-only Gemini access. Never return, log, or send the key to the browser.
 export const configured=()=>Boolean(process.env.GEMINI_API_KEY?.trim());
 export function modelFor(kind='chat'){
- const name=(kind==='vision'?process.env.GEMINI_VISION_MODEL||process.env.GEMINI_MODEL:process.env.GEMINI_MODEL)||'gemini-3.8-flash';
+ const name=(kind==='vision'?process.env.GEMINI_VISION_MODEL||process.env.GEMINI_MODEL:process.env.GEMINI_MODEL)||'gemini-3.5-flash-lite';
  const sanitized=name.replace(/^models\//,'');
- return /^[a-zA-Z0-9._-]{3,90}$/.test(sanitized)?sanitized:'gemini-3.8-flash';
+ return /^[a-zA-Z0-9._-]{3,90}$/.test(sanitized)?sanitized :'gemini-3.5-flash-lite';
 }
 const fallbackFor=primary=>{
+ if(primary==='gemini-3.5-flash-lite')return 'gemini-3.6-flash';
  if(primary==='gemini-3.8-flash')return 'gemini-3.6-flash';
  if(primary==='gemini-3.6-flash')return 'gemini-3.8-flash';
  return null;
