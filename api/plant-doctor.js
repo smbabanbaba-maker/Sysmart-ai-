@@ -1,3 +1,4 @@
+import {classifyProviderError,classifyConnectionError} from './provider-errors.js';
 export default async function handler(req,res){
  const send=(status,body)=>res.status(status).setHeader('Content-Type','application/json; charset=utf-8').send(JSON.stringify(body));
  if(req.method!=='POST')return send(405,{error:'Method not allowed'});
@@ -36,7 +37,7 @@ Write all fields in clear natural English. The image may show a healthy plant, a
    })
   });
   const data=await response.json();
-  if(!response.ok)return send(502,{error:'The AI image service could not process this photo. Please try again later.'});
+  if(!response.ok){const problem=classifyProviderError(response.status,data?.error?.code||data?.error?.type);return send(problem.status,{code:problem.code,error:problem.error});}
   let raw;try{raw=JSON.parse(data?.choices?.[0]?.message?.content||'');}catch{return send(502,{error:'Could not read the plant assessment. Please try again.'});}
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return send(502,{error:'The analysis returned an invalid report. Try again.'});
   const str=(v,fallback,max=500)=>typeof v==='string'&&v.trim()?v.trim().slice(0,max):fallback;
@@ -54,7 +55,8 @@ Write all fields in clear natural English. The image may show a healthy plant, a
    whenToGetHelp:str(raw.whenToGetHelp,'Consult a local extension worker if symptoms worsen or spread.',400)
   };
   return send(200,{report,disclaimer:'Image screening only; verify treatment decisions with a qualified local agricultural professional.'});
- }catch{
-  return send(502,{error:'Plant analysis is temporarily unavailable. Check your connection and try again.'});
+ }catch(error){
+  const problem=classifyConnectionError(error);
+  return send(problem.status,{code:problem.code,error:problem.error});
  }
 }
