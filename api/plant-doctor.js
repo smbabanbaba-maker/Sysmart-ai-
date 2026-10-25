@@ -37,7 +37,7 @@ Write all fields in clear natural English. The image may show a healthy plant, a
    })
   });
   const data=await response.json();
-  if(!response.ok){const problem=classifyProviderError(response.status,data?.error?.code||data?.error?.type);return send(problem.status,{code:problem.code,error:problem.error});}
+  if(!response.ok){const problem=classifyProviderError(response.status,data?.error?.code,data?.error?.type,data?.error?.message);return send(problem.status,{code:problem.code,error:problem.error});}
   let raw;try{raw=JSON.parse(data?.choices?.[0]?.message?.content||'');}catch{return send(502,{error:'Could not read the plant assessment. Please try again.'});}
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return send(502,{error:'The analysis returned an invalid report. Try again.'});
   const str=(v,fallback,max=500)=>typeof v==='string'&&v.trim()?v.trim().slice(0,max):fallback;

@@ -14,7 +14,7 @@ export default async function handler(req,res){
  try {
   const response=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(26000),headers:{'Content-Type':'application/json','Authorization':`Bearer ${process.env.OPENAI_API_KEY}`},body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-4o-mini',temperature:0.3,max_tokens:1050,messages:[{role:'system',content:instructions},...cleaned]})});
   const data=await response.json();
-  if(!response.ok){const problem=classifyProviderError(response.status,data?.error?.code||data?.error?.type);return json(res,problem.status,{code:problem.code,error:problem.error});}
+  if(!response.ok){const problem=classifyProviderError(response.status,data?.error?.code,data?.error?.type,data?.error?.message);return json(res,problem.status,{code:problem.code,error:problem.error});}
   return json(res,200,{reply:data?.choices?.[0]?.message?.content||'No answer received'});
  }catch(e){const problem=classifyConnectionError(e);return json(res,problem.status,{code:problem.code,error:problem.error});}
 }

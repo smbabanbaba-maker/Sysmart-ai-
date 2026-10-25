@@ -18,3 +18,5 @@ test('provider errors do not expose raw API messages',()=>{
  assert.equal(classifyProviderError(502,'unexpected').code,'AI_PROVIDER_ERROR');
  assert.match(classifyConnectionError({name:'TimeoutError'}).error,/too long/i);
 });
+
+test('quota codes and error types are actionable',()=>{for(const x of ['credit_balance_exhausted','organization_usage_limit_exceeded','organization_spend_limit_exceeded','project_spend_limit_exceeded'])assert.equal(classifyProviderError(429,x).code,'AI_BILLING_REQUIRED');assert.equal(classifyProviderError(429,'unknown','insufficient_quota').code,'AI_BILLING_REQUIRED');assert.equal(classifyProviderError(429,'rate_limit_exceeded').code,'AI_RATE_LIMITED')});
