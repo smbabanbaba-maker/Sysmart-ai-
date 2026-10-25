@@ -1,0 +1,52 @@
+name: SYSMART AI real Gemini acceptance
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  one-time-ai-check:
+    if: github.event.head_commit.message == 'Run one-time live Gemini acceptance tests'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Confirm real chat and plant image responses
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request, urllib.error, json, base64, zlib, struct, time
+          base='https://sysmart-ai.vercel.app'
+          def request(route,payload):
+              raw=json.dumps(payload).encode()
+              req=urllib.request.Request(base+route,data=raw,headers={'Content-Type':'application/json','Accept':'application/json'},method='POST')
+              try:
+                  with urllib.request.urlopen(req,timeout=55) as r:
+                      return r.status,json.load(r)
+              except urllib.error.HTTPError as e:
+                  try: data=json.loads(e.read().decode())
+                  except: data={}
+                  return e.code,data
+          code,data=request('/api/chat',{'messages':[{'role':'user','content':'In one sentence, explain what maize is.'}],'language':'en'})
+          print('CHAT HTTP',code,'code',data.get('code'),'answer_length',len(data.get('reply','')),flush=True)
+          if code!=200 or not isinstance(data.get('reply'),str) or not data['reply'].strip():
+              raise SystemExit('AI Advisor did not return a valid Gemini response')
+          def chunk(tag,data):
+              return struct.pack('!I',len(data))+tag+data+struct.pack('!I',zlib.crc32(tag+data)&0xffffffff)
+          w=h=96
+          rows=[]
+          for y in range(h):
+              row=bytearray([0])
+              for x in range(w):
+                  leaf=((x-47)/31)**2+((y-45)/37)**2<1
+                  stem=abs(x-48)<2 and y>=44 and y<94
+                  row.extend((51,147,55) if leaf else ((96,127,69) if stem else (245,245,234)))
+              rows.append(bytes(row))
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('!2I5B',w,h,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(b''.join(rows),9))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          code,data=request('/api/plant-doctor',{'image':image,'language':'en'})
+          report=data.get('report')
+          print('PLANT HTTP',code,'code',data.get('code'),'has_structured_report',isinstance(report,dict),'plant_identified',bool(report and report.get('plantName')),flush=True)
+          if code!=200 or not isinstance(report,dict) or not report.get('plantName'):
+              raise SystemExit('Plant Doctor did not return a structured Gemini response')
+          print('PASS: Live Gemini chat and real image processing returned valid results')
+          PY
