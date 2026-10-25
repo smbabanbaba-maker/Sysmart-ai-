@@ -20,3 +20,29 @@ test('image input uses inlineData and JSON response',async()=>{
  try{const result=await generateGemini({model:'gemini-2.5-flash',contents:[{role:'user',parts:[{inlineData:{mimeType:'image/jpeg',data:'ZGF0YQ=='}}]}],systemInstruction:'Plant health',responseMimeType:'application/json'});assert.equal(JSON.parse(result).plantName,'Maize');assert.equal(request.contents[0].parts[0].inlineData.mimeType,'image/jpeg');assert.equal(request.generationConfig.responseMimeType,'application/json');}
  finally{globalThis.fetch=fetchOld;if(old===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=old}
 });
+
+
+test('fails over from unavailable Gemini 3.8 to stable Gemini 3.6',async()=>{
+ const oldKey=process.env.GEMINI_API_KEY,originalFetch=globalThis.fetch;
+ process.env.GEMINI_API_KEY='test-key';const attempted=[];
+ globalThis.fetch=async(url)=>{
+  attempted.push(url);
+  if(url.includes('gemini-3.8-flash'))return {ok:false,status:503,json:async()=>({error:{status:'UNAVAILABLE',message:'Provider capacity unavailable'}})};
+  return {ok:true,status:200,json:async()=>({candidates:[{content:{parts:[{text:'Maize needs consistent soil moisture.'}]}}]})};
+ };
+ try{
+  const reply=await generateGemini({model:'gemini-3.8-flash',contents:[{role:'user',parts:[{text:'Grow maize'}]}],systemInstruction:'Agriculture'});
+  assert.match(reply,/Maize/);
+  assert.equal(attempted.length,2);
+  assert.match(attempted[1],/gemini-3.6-flash/);
+ }finally{globalThis.fetch=originalFetch;if(oldKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=oldKey;}
+});
+test('quota errors do not trigger fallback model',async()=>{
+ const oldKey=process.env.GEMINI_API_KEY,originalFetch=globalThis.fetch;
+ process.env.GEMINI_API_KEY='test-key';let calls=0;
+ globalThis.fetch=async()=>{calls++;return {ok:false,status:429,json:async()=>({error:{status:'RESOURCE_EXHAUSTED',message:'Limit reached'}})}};
+ try{
+  await assert.rejects(generateGemini({model:'gemini-3.8-flash',contents:[{role:'user',parts:[{text:'Hi'}]}],systemInstruction:'Test'}),e=>e.code==='GEMINI_QUOTA_LIMIT');
+  assert.equal(calls,1);
+ }finally{globalThis.fetch=originalFetch;if(oldKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=oldKey;}
+});
