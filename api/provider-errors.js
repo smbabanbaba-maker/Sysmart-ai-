@@ -1,18 +1,15 @@
-// Error messages safe to expose to farmers. Never return provider secrets or raw diagnostics.
-export function classifyProviderError(status,code=''){
- const kind=String(code||'').toLowerCase();
- const typeCode=String(arguments[2]||'').toLowerCase();
- const detail=String(arguments[3]||'').toLowerCase().slice(0,500);
- const quota=new Set(['insufficient_quota','billing_hard_limit_reached','credit_balance_exhausted','organization_usage_limit_exceeded','organization_spend_limit_exceeded','project_spend_limit_exceeded']);
- if(status===401)return {status:503,code:'INVALID_AI_KEY',error:'OpenAI rejected the API key. Check the key in Vercel Production and deploy again.'};
- if(status===403)return {status:503,code:'AI_PERMISSION_DENIED',error:'This OpenAI project is not permitted to use the selected model. Check your API project permissions.'};
- if(status===429&&(quota.has(kind)||quota.has(typeCode)||/credit.balance.exhausted|insufficient.quota|exceeded.*quota|spend.limit.exceeded/.test(detail)))return {status:503,code:'AI_BILLING_REQUIRED',error:'OpenAI API billing or credits are unavailable. Enable API billing and check your usage limits.'};
- if(status===429)return {status:429,code:'AI_RATE_LIMITED',error:'OpenAI request or token rate limit reached. Check API Limits before trying again; repeated requests can extend the limit.'};
- if(status===404||kind==='model_not_found')return {status:503,code:'AI_MODEL_UNAVAILABLE',error:'The configured OpenAI model is unavailable to this API project. Check OPENAI_MODEL or OPENAI_VISION_MODEL.'};
- if(status===400)return {status:502,code:'AI_REQUEST_REJECTED',error:'The AI provider could not process this request. Try a shorter question or a clearer plant photo.'};
- return {status:502,code:'AI_PROVIDER_ERROR',error:'The AI provider is temporarily unavailable. Try again later.'};
+// Friendly Google Gemini errors, without passing provider internals or API keys to clients.
+export function classifyProviderError(status,reason='',message=''){
+ const kind=String(reason||'').toUpperCase(),detail=String(message||'').toLowerCase().slice(0,800);
+ if(status===401||/api.key.not.valid|api_key_invalid|invalid api key|expired api key/.test(detail))return {status:503,code:'INVALID_GEMINI_KEY',error:'Google Gemini rejected the API key. Check GEMINI_API_KEY in Vercel Production.'};
+ if(status===403||kind==='PERMISSION_DENIED')return {status:503,code:'GEMINI_ACCESS_DENIED',error:'This Google AI Studio project cannot access the selected Gemini model. Check project access and region.'};
+ if(status===429||kind==='RESOURCE_EXHAUSTED')return {status:429,code:'GEMINI_QUOTA_LIMIT',error:'Gemini usage limit or free-tier quota has been reached. Check Google AI Studio Usage and Limits.'};
+ if(status===404||kind==='NOT_FOUND')return {status:503,code:'GEMINI_MODEL_UNAVAILABLE',error:'The selected Gemini model is not available. Check GEMINI_MODEL in Vercel.'};
+ if(status===400||kind==='INVALID_ARGUMENT')return {status:400,code:'GEMINI_BAD_REQUEST',error:'Gemini could not process that request. Try shorter text or a clearer image.'};
+ if(status===503||kind==='UNAVAILABLE')return {status:503,code:'GEMINI_UNAVAILABLE',error:'Gemini is temporarily unavailable. Please try again later.'};
+ return {status:502,code:'GEMINI_PROVIDER_ERROR',error:'Gemini could not process the request right now.'};
 }
 export function classifyConnectionError(error){
- if(error?.name==='TimeoutError'||error?.name==='AbortError')return {status:504,code:'AI_TIMEOUT',error:'The AI request took too long. Check your connection and try again.'};
- return {status:502,code:'AI_NETWORK_ERROR',error:'The AI service could not be reached. Please try again.'};
+ if(error?.name==='AbortError'||error?.name==='TimeoutError')return {status:504,code:'GEMINI_TIMEOUT',error:'Gemini response timed out. Try again later.'};
+ return {status:502,code:'GEMINI_CONNECTION',error:'Could not connect to Gemini. Check the network and try again.'};
 }

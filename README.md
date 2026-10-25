@@ -1,3 +1,13 @@
+## Version 1.1.0 — Gemini only
+
+SYSMART AI uses **Google Gemini** for both Advisor and Plant Doctor. The OpenAI key is no longer used.
+1. Generate a key at https://aistudio.google.com/apikey.
+2. Save it in Vercel Production environment variables as `GEMINI_API_KEY` and deploy the latest commit.
+3. Optionally set `GEMINI_MODEL` and `GEMINI_VISION_MODEL` (defaults to `gemini-2.5-flash`).
+4. Check `/api/status` for `provider: Gemini` and `features.advisor: true`. This confirms configuration, not successful inference.
+5. Test real chat and plant photo requests; Gemini projects may have region, billing, quota, model or rate limits. Manage usage in Google AI Studio.
+Never commit an API key; only server-side functions access GEMINI_API_KEY.
+
 # SYSMART AI — from SYLUTION
 
 SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and beyond. The home interface is dark forest green with a responsive dashboard, quick AI advice, practical farming tools and real field photography. All interface text is in English.
@@ -14,7 +24,7 @@ SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and b
 - Client-side photo compression, provider timeouts, error states and bounded chat request sizes.
 
 **Important launch limitations:**
-1. AI Chat and Plant Doctor require a *working*, server-side `OPENAI_API_KEY` at Vercel Settings → Environment Variables. `OPENAI_MODEL` and `OPENAI_VISION_MODEL` are optional and must be accessible to the selected account. Never commit keys.
+1. AI Chat and Plant Doctor require a *working*, server-side `GEMINI_API_KEY` at Vercel Settings → Environment Variables. `GEMINI_MODEL` and `GEMINI_VISION_MODEL` are optional and must be accessible to the selected account. Never commit keys.
 2. An AI key being present only means **configured**, not necessarily healthy; test a real chat request and plant photo before advertising AI as live.
 3. **No cloud accounts or cloud database are connected.** Data, including plant reports, is stored in the current browser. Export backups before switching devices or clearing storage. Reports save the structured findings; the original plant photo is not included in saved reports or backup.
 4. Weather uses Open-Meteo and may have delayed, missing or estimated forecasts. No sensor data, farm-specific rain gauge values, official alerts or buyer listings are implied.
@@ -22,7 +32,7 @@ SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and b
 6. Vercel deployment `READY` alone does not guarantee API success or browser usability. Check production HTTP responses, camera permissions, actual provider access, iOS Safari and Android Chrome.
 
 **Deployment verification checklist:**
-- Set `OPENAI_API_KEY` in Production, deploy again, visit `/api/status` and verify advisor and plantDoctor appear configured.
+- Set `GEMINI_API_KEY` in Production, deploy again, visit `/api/status` and verify advisor and plantDoctor appear configured.
 - Ask one benign farm question; check the request yields a genuine model response.
 - Upload a real plant photo with the user's consent; confirm a structured report, and save/open/delete it.
 - Create a farm and financial record, export JSON, use a separate browser profile to restore it, and check totals.
@@ -37,7 +47,7 @@ SYSMART AI is a mobile-first agricultural assistant for growers in Nigeria and b
 - The frontend compresses large Android/iPhone photos before sending them through the secure API route; no automatic image upload happens until Analyze is tapped.
 - The model is instructed not to invent a plant or disease diagnosis, claim false confidence percentages, or issue pesticide/dosing instructions.
 - The structured report and controls use responsive midnight-forest/ivory/lime styling with reduced-motion accessibility.
-- Without `OPENAI_API_KEY` in the hosting environment, a clear error is shown. No simulated plant analysis is displayed.
+- Without `GEMINI_API_KEY` in the hosting environment, a clear error is shown. No simulated plant analysis is displayed.
 
 ## Version 0.8.0 — Premium color system
 
@@ -80,7 +90,7 @@ Run checks with `npm run check && npm test`.
 
 ## Feature status
 
-The Crop Planner, local Farm Records and Farms workspace are functional in the browser. The weather endpoint uses Open-Meteo. AI Advisor and Plant Doctor require a server-side `OPENAI_API_KEY` and suitable provider access. Do not expose API keys in frontend code. This MVP has no cloud sync or production-grade user authentication; private farm records remain in local browser storage. Sensor and marketplace integrations are planned, not live.
+The Crop Planner, local Farm Records and Farms workspace are functional in the browser. The weather endpoint uses Open-Meteo. AI Advisor and Plant Doctor require a server-side `GEMINI_API_KEY` and suitable provider access. Do not expose API keys in frontend code. This MVP has no cloud sync or production-grade user authentication; private farm records remain in local browser storage. Sensor and marketplace integrations are planned, not live.
 
 ## Deployment
 

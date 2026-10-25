@@ -1,20 +1,16 @@
-import {classifyProviderError,classifyConnectionError} from './provider-errors.js';
-const json=(res,status,data)=>res.status(status).setHeader('Content-Type','application/json; charset=utf-8').send(JSON.stringify(data));
+import {configured,modelFor,generateGemini} from './gemini.js';
+const send=(res,status,data)=>res.status(status).setHeader('Content-Type','application/json; charset=utf-8').send(JSON.stringify(data));
 export default async function handler(req,res){
- if(req.method!=='POST')return json(res,405,{error:'Method not allowed'});
- if(process.env.ALLOWED_ORIGIN&&req.headers.origin&&req.headers.origin!==process.env.ALLOWED_ORIGIN)return json(res,403,{error:'Origin not allowed'});
- if(!process.env.OPENAI_API_KEY)return json(res,503,{error:'AI chat is not connected yet. Configure OPENAI_API_KEY on the server to enable live answers.',code:'NOT_CONFIGURED'});
- const {messages=[],language='ha',farmContext=''}=req.body||{};
- if(!Array.isArray(messages)||messages.length>24||!messages.length)return json(res,400,{error:'Provide up to 24 messages'});
- const cleaned=messages.map(m=>({role:m.role,content:String(m.content||'').slice(0,7000)})).filter(m=>['user','assistant'].includes(m.role)&&m.content);
- if(!cleaned.length||cleaned.at(-1).role!=='user')return json(res,400,{error:'A user message is required'});
- if(cleaned.reduce((n,m)=>n+m.content.length,0)>22000)return json(res,413,{error:'This conversation is too long. Start a new chat or shorten your messages.'});
- const context=String(farmContext).slice(0,2500);
- const instructions=`You are SYSMART AI, an agricultural advisor built by SYLUTION for Nigerian and African farmers. Answer in ${language==='ha'?'natural Hausa, unless the farmer asks for another language':'clear English, unless the farmer asks for another language'}. Be practical, ask clarifying questions for location, crop, growth stage, season, area, irrigation, and soil testing where needed. Do NOT pretend to know live weather, market prices, lab results or diagnoses. Do not give precise pesticide application rates or hazardous mixing directions without confirmed, locally registered label and professional review. For plant disease, describe possibilities and verification steps, not definitive diagnosis from uncertain data. Be concise, supportive and accurate. If relevant, explain uncertainty. Farm context supplied by farmer: ${context}`;
- try {
-  const response=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(26000),headers:{'Content-Type':'application/json','Authorization':`Bearer ${process.env.OPENAI_API_KEY}`},body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-4o-mini',temperature:0.3,max_tokens:1050,messages:[{role:'system',content:instructions},...cleaned]})});
-  const data=await response.json();
-  if(!response.ok){const problem=classifyProviderError(response.status,data?.error?.code,data?.error?.type,data?.error?.message);return json(res,problem.status,{code:problem.code,error:problem.error});}
-  return json(res,200,{reply:data?.choices?.[0]?.message?.content||'No answer received'});
- }catch(e){const problem=classifyConnectionError(e);return json(res,problem.status,{code:problem.code,error:problem.error});}
+ if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
+ if(process.env.ALLOWED_ORIGIN&&req.headers.origin&&req.headers.origin!==process.env.ALLOWED_ORIGIN)return send(res,403,{error:'Origin not allowed'});
+ if(!configured())return send(res,503,{code:'NOT_CONFIGURED',error:'Add GEMINI_API_KEY in Vercel Production to enable the AI Advisor.'});
+ const {messages=[],language='en',farmContext=''}=req.body||{};
+ if(!Array.isArray(messages)||!messages.length||messages.length>24)return send(res,400,{error:'Provide 1 to 24 chat messages'});
+ const conversation=messages.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.content==='string'&&m.content.trim()).map(m=>({role:m.role,content:m.content.trim().slice(0,6000)}));
+ if(!conversation.length||conversation.at(-1).role!=='user')return send(res,400,{error:'The latest message must be from a farmer'});
+ if(conversation.reduce((n,m)=>n+m.content.length,0)>22000)return send(res,413,{error:'Conversation too long. Start a new chat.'});
+ const systemInstruction=`You are SYSMART AI from SYLUTION, a practical agricultural advisor for Nigerian and African farmers. Answer in ${language==='ha'?'natural Hausa unless otherwise requested':'clear English unless otherwise requested'}. Help with planting, disease screening, pests, irrigation, farming costs, and farm planning. Ask relevant questions if location, crop or growth stage is unknown. Do not pretend to know live forecasts, soil test results or current market prices. Do not claim a definitive crop diagnosis without evidence. Avoid unverified chemical pesticides, dosages and hazardous mixing. Recommend a local agricultural expert for serious problems. Be direct, useful and honest about uncertainty. Farmer-provided context: ${String(farmContext).slice(0,2500)}`;
+ const contents=conversation.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
+ try{const reply=await generateGemini({model:modelFor('chat'),contents,systemInstruction,maxOutputTokens:1250});return send(res,200,{reply,provider:'Gemini'});}
+ catch(error){return send(res,error.httpStatus||502,{error:error.message||'Gemini unavailable',code:error.code||'GEMINI_ERROR'});}
 }
