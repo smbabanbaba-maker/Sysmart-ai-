@@ -1,11 +1,11 @@
 {
   "name": "sysmart-ai",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "SYSMART AI from SYLUTION — responsive farming intelligence PWA and Vercel API functions.",
   "type": "module",
   "scripts": {
-    "check": "node --check app.js && node --check core.js && node --check server.mjs && node --check api/gemini.js && node --check api/provider-errors.js && node --check api/status.js && node --check api/chat.js && node --check api/plant-doctor.js && node --check api/weather.js && node --check api/gemini.js && node --check api/status.js && node --check sw.js",
+    "check": "node --check chat-network.js && node --check app.js && node --check core.js && node --check server.mjs && node --check api/gemini.js && node --check api/provider-errors.js && node --check api/status.js && node --check api/chat.js && node --check api/plant-doctor.js && node --check api/weather.js && node --check api/gemini.js && node --check api/status.js && node --check sw.js",
     "test": "node --test tests/*.test.mjs",
     "preview": "node server.mjs"
   },

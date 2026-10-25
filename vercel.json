@@ -2,5 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": null,
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 45
+    },
+    "api/plant-doctor.js": {
+      "maxDuration": 45
+    }
+  }
 }
