@@ -3,6 +3,10 @@ import { CITIES, CROPS, money, escapeHtml as esc, totals, safeDate, createPlan, 
 
 const STORAGE_KEY = 'sysmart-ai-mvp-v1';
 const DRAFT_KEY = 'sysmart-ai-chat-draft-v1';
+const PAGE_KEY = 'sysmart-ai-last-page-v1';
+const VALID_PAGES = new Set(['dashboard','farms','planner','chat','plant','weather','records','settings']);
+function readPage(){try{const page=sessionStorage.getItem(PAGE_KEY);return VALID_PAGES.has(page)?page:'dashboard'}catch{return 'dashboard'}}
+function storePage(page){try{sessionStorage.setItem(PAGE_KEY,page)}catch{}}
 function storeChatDraft(value){try{if(value)localStorage.setItem(DRAFT_KEY,value.slice(0,6000));else localStorage.removeItem(DRAFT_KEY)}catch{}}
 function readChatDraft(){try{return (localStorage.getItem(DRAFT_KEY)||'').slice(0,6000)}catch{return ''}}
 
@@ -29,7 +33,7 @@ state.showDemo=false;
 state.onboardingSeen=Boolean(state.onboardingSeen);
 if(!state.chats.length)state.chats=[{id:'welcome',title:'New conversation',messages:[]}];
 if(!state.chats.some(c=>c.id===state.activeChat))state.activeChat=state.chats[0].id;
-const ui={page:'dashboard',sidebar:false,modal:null,chatInput:readChatDraft(),chatBusy:false,weather:null,weatherError:'',weatherBusy:false,weatherCity:null,weatherFetchedAt:null,weatherStale:false,photo:null,plantResult:null,plantError:'',plantBusy:false,aiReady:null,aiChecked:false,aiError:'',plantSaved:false,chatError:null,plan:null,recordFilter:'all'};
+const ui={page:readPage(),sidebar:false,modal:null,chatInput:readChatDraft(),chatBusy:false,weather:null,weatherError:'',weatherBusy:false,weatherCity:null,weatherFetchedAt:null,weatherStale:false,photo:null,plantResult:null,plantError:'',plantBusy:false,aiReady:null,aiChecked:false,aiError:'',plantSaved:false,chatError:null,plan:null,recordFilter:'all'};
 const svgPaths={
  home:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
  farm:'<path d="M3 20V9l9-6 9 6v11H3Z"/><path d="M9 20v-8h6v8"/>',leaf:'<path d="M20 4C7 4 3 10 4 17c4 5 14 4 16-13ZM3 21c4-6 8-10 14-12"/>',
@@ -229,7 +233,7 @@ if(ui.modal==='add-record')contents=`<div class="modal-heading"><h2>Add Transact
 if(ui.modal.startsWith('farm:')){const f=state.farms.find(x=>x.id===ui.modal.slice(5));if(f)contents=`<div class="modal-heading"><h2>${esc(f.name)}</h2><button class="icon-button" data-action="close-modal" aria-label="Close dialog">${icon('close',21)}</button></div><div class="modal-farm-cover" style="background-image:url('${photoFor(f.crop)}')"></div><div class="farm-detail-list"><p><strong>Crop</strong><span>${cropName(f.crop)}</span></p><p><strong>Location</strong><span>${esc(f.location)}</span></p><p><strong>Area</strong><span>${formatNumber(f.area)} hectares</span></p><p><strong>Planting date</strong><span>${safeDate(f.start)}</span></p><p><strong>Status</strong><span>${esc(f.status||'Growing')}</span></p></div>${state.plantReports.some(r=>r.farmId===f.id)?`<div class="farm-linked-reports"><h3>Plant health reports</h3>${state.plantReports.filter(r=>r.farmId===f.id).slice(0,5).map(r=>`<button type="button" data-action="open-plant-report" data-id="${esc(r.id)}">${icon('leaf',16)} ${esc(r.report?.plantName||'Plant report')} — ${safeDate(r.date)} ${icon('arrow',15)}</button>`).join('')}</div>`:''}<button class="outline-button danger full" data-action="delete-farm" data-id="${esc(f.id)}">${icon('trash',16)} Delete This Farm</button>`}
 return `<div class="modal-backdrop" data-action="backdrop"><section class="modal-window" role="dialog" aria-modal="true">${contents}</section></div>`}
 function render(){document.documentElement.lang='en';const pages={dashboard:home,farms,planner,chat,plant,weather,records,settings};const el=document.getElementById('app');el.innerHTML=`<div class="app-shell">${sidebar()}<div class="main-layout">${header()}<main id="main-content">${(pages[ui.page]||home)()}</main></div>${bottomNav()}${ui.sidebar?'<div class="nav-scrim" data-action="menu"></div>':''}${modal()}</div>`;const msgs=document.getElementById('messages');if(msgs)msgs.scrollTop=msgs.scrollHeight}
-function navigate(to){ui.page=to;ui.sidebar=false;ui.modal=null;render();window.scrollTo({top:0,behavior:'instant'});if(to==='weather'&&!ui.weather&&!ui.weatherBusy)loadForecast()}
+function navigate(to){const page=VALID_PAGES.has(to)?to:'dashboard';ui.page=page;storePage(page);ui.sidebar=false;ui.modal=null;render();window.scrollTo({top:0,behavior:'instant'});if(page==='weather'&&!ui.weather&&!ui.weatherBusy)loadForecast()}
 async function askAI(question){
  const content=String(question||'').trim();
  if(!content||ui.chatBusy)return;
