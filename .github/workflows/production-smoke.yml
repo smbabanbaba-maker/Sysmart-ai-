@@ -1,0 +1,46 @@
+name: SYSMART AI production smoke
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Confirm production app and Gemini API status
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, time, urllib.request, urllib.error
+          base='https://sysmart-ai.vercel.app'
+          last=None
+          for attempt in range(18):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(base+'/api/status',headers={'Accept':'application/json','Cache-Control':'no-cache'}),timeout=12) as r:
+                      if r.status!=200: raise Exception('AI status returned HTTP '+str(r.status))
+                      data=json.load(r)
+                  if data.get('provider')!='Gemini':
+                      raise Exception('Wrong production provider: '+str(data.get('provider')))
+                  if data.get('features',{}).get('advisor') is not True or data.get('features',{}).get('plantDoctor') is not True:
+                      raise Exception('Gemini API key not configured in production')
+                  with urllib.request.urlopen(base+'/',timeout=12) as r:
+                      if r.status!=200 or 'text/html' not in r.headers.get('Content-Type',''):
+                          raise Exception('Home HTML not available')
+                  request=urllib.request.Request(base+'/api/chat',method='GET')
+                  try:
+                      urllib.request.urlopen(request,timeout=12)
+                      raise Exception('Chat endpoint must reject GET')
+                  except urllib.error.HTTPError as e:
+                      if e.code!=405: raise Exception('Chat endpoint returned HTTP '+str(e.code)+' instead of 405')
+                  print('PASS: Homepage, Gemini status (configured), chat route are reachable via public URL')
+                  break
+              except Exception as e:
+                  last=e
+                  print('Attempt',attempt+1,'failed:',str(e)[:240],flush=True)
+                  time.sleep(12)
+          else:
+              raise SystemExit('Production smoke failed: '+str(last))
+          PY
