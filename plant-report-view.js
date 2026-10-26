@@ -41,7 +41,7 @@ export function renderPlantReport(report,{esc,icon}){
  const evidence=report.visibleSigns||[];
  const condition=(title,emoji,detail,kind)=>'<article class="pd-v2-observation"><span class="pd-v2-obs-emoji" aria-hidden="true">'+emoji+'</span><div><div class="pd-v2-feature-head"><strong>'+title+'</strong><span class="pd-v2-status-soft">'+clean(detail.status==='observed'?'Visible evidence':detail.status==='suspected'?'Possible':detail.status==='not-visible'?'Not visible':'Unclear')+'</span></div><p>'+clean(detail.details,'Cannot be reliably assessed from this photo.')+'</p>'+list(detail.actions,kind==='weed'?'Confirm which plants are crops before removing any growth.':'Inspect leaf undersides and stems for identifiable signs.')+'</div></article>';
  const careTile=(emoji,title,key)=>'<div class="pd-v2-care-item"><span aria-hidden="true">'+emoji+'</span><div><strong>'+title+'</strong><p>'+clean(care[key],'Cannot confirm this need from the image alone.')+'</p></div></div>';
- return '<div class="pd-v2-report" aria-live="polite">'
+ const markup='<div class="pd-v2-report" aria-live="polite">'
   +'<section class="pd-v2-identity"><div class="pd-v2-identity-icon" aria-hidden="true">'+cropEmoji(report.plantName)+'</div><div class="pd-v2-identity-content"><span class="pd-v2-kicker">YOUR PLANT ASSESSMENT</span><h2>'+main+'</h2><p>'+clean(report.identificationNotes,'Identification is preliminary.')+'</p><div class="pd-v2-tags"><span>'+icon('leaf',13)+' '+stage+'</span><span>'+icon('search',13)+' '+clean(report.certainty,'Photo-based assessment, not a diagnosis')+'</span></div></div></section>'
   +'<div class="pd-v2-summary"><div class="pd-v2-summary-top"><span class="pd-v2-health pd-v2-health-'+statusClass+'"><i></i>'+statusLabel+'</span><span class="pd-v2-urgency">'+urgency+'</span></div><h3>Plant health overview</h3><p>'+clean(report.healthAssessment,'A single image cannot confirm plant health.')+'</p><div class="pd-v2-issue"><strong>Possible health concern</strong><span>'+clean(report.likelyProblem,'No specific issue can be determined from this image.')+'</span></div></div>'
   +'<section class="pd-v2-section"><h3><span>🌱</span> Plants identified in this photo</h3><p class="pd-v2-subtitle">Names are preliminary. Only visually distinguishable plants should appear here.</p><div class="pd-v2-crops">'+cards+'</div></section>'
@@ -56,4 +56,33 @@ export function renderPlantReport(report,{esc,icon}){
   +'<section class="pd-v2-help"><strong>'+icon('info',16)+' When to contact an expert</strong><p>'+clean(report.whenToGetHelp,'Seek local agricultural extension support if symptoms spread or plants decline.')+'</p></section>'
   +'<p class="pd-v2-disclaimer">'+icon('shield',16)+' AI photo screening is not a laboratory diagnosis. Confirm the cause before applying pesticides, crop medicines or expensive treatments.</p>'
   +'</div>';
+ if(report.language!=='ha')return markup;
+ const pairs=[
+ ['YOUR PLANT ASSESSMENT','RAHOTON SHUKARKA'],
+ ['Plant health overview','Yanayin lafiyar shuka'],
+ ['Possible health concern','Matsalar da ake zargi'],
+ ['Plants identified in this photo','Shuke-shuken da aka gane a hoto'],
+ ['Individual plant health cards','Bayanan lafiyar kowace shuka'],
+ ['What the image actually shows','Abubuwan da aka gani a hoton'],
+ ['Pests and weeds','Kwari da ciyayi'],
+ ['What your crop may need','Abubuwan da shukarka ke bukata'],
+ ['Recommended next steps','Matakan da za a fara dauka'],
+ ['Treatment guidance','Shawarwarin kulawa da magani'],
+ ['Prevention','Hanyoyin kariya'],
+ ['What to monitor','Abubuwan da za a kula da su'],
+ ['Get a more accurate result','Don samun ingantaccen sakamako'],
+ ['When to contact an expert','Lokacin neman kwararre'],
+ ['Visible signs','Alamomin da aka gani'],
+ ['Possible problem','Matsalar da ake zargi'],
+ ['Water and nutrients','Ruwa da taki'],
+ ['What to do first','Abin da za a fara yi'],
+ ['No obvious damage','Babu matsala a fili'],
+ ['Possible stress','Akwai yiwuwar damuwa'],
+ ['Visible damage','An ga lalacewa'],
+ ['Not yet clear','Ba a tabbatar ba'],
+ ['Routine care','Kulawa na yau da kullum'],
+ ['Monitor closely','A sa ido sosai'],
+ ['Ask an expert','A tuntubi kwararre']
+ ];
+ return pairs.reduce((html,[en,ha])=>html.replaceAll(en,ha),markup);
 }
