@@ -29,6 +29,13 @@ export function normalizePlantReport(raw){
   plantName:mainName,
   identificationNotes:bounded(raw.identificationNotes,'The available image may not identify the plant reliably.'),
   identifiedPlants:plants,
+  plantAssessments:(Array.isArray(raw.plantAssessments)?raw.plantAssessments:[]).filter(p=>p&&typeof p==='object'&&typeof p.name==='string'&&p.name.trim()).slice(0,4).map(p=>({
+   name:bounded(p.name,'Unidentified plant',110),confidence:valid(p.confidence,['high','medium','low'],'low'),
+   healthStatus:valid(p.healthStatus,['healthy-looking','possible-stress','visible-damage','unclear'],'unclear'),
+   visibleEvidence:bounded(p.visibleEvidence,'Not clear from photo.',350),possibleProblem:bounded(p.possibleProblem,'Not determined',240),
+   pestsAndWeeds:bounded(p.pestsAndWeeds,'Not clear',260),waterAndNutrients:bounded(p.waterAndNutrients,'Check soil locally.',350),
+   nextAction:bounded(p.nextAction,'Take a closer photo.',350),treatment:bounded(p.treatment,'Do not spray without diagnosis.',350)
+  })),
   growthStage:bounded(raw.growthStage,'Not clear from photo',110),
   healthStatus:valid(raw.healthStatus,['healthy-looking','possible-stress','visible-damage','unclear'],'unclear'),
   urgency:valid(raw.urgency,['routine','monitor','seek-expert'],'monitor'),
