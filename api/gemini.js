@@ -23,7 +23,7 @@ export async function generateGemini({contents,systemInstruction,model,maxOutput
   const timer=setTimeout(()=>ctrl.abort(),18500);
   try{
    const endpoint='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(models[i])+':generateContent';
-   const request={contents,systemInstruction:{parts:[{text:systemInstruction}]},generationConfig:{maxOutputTokens,thinkingConfig:{thinkingLevel:'low'},...(responseMimeType?{responseMimeType}:{})}};
+   const request={contents,systemInstruction:{parts:[{text:systemInstruction}]},generationConfig:{maxOutputTokens,thinkingConfig:{thinkingLevel:models[i].includes('flash-lite')?'minimal':'low'},...(responseMimeType?{responseMimeType}:{})}};
    const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':process.env.GEMINI_API_KEY},body:JSON.stringify(request),signal:ctrl.signal});
    let data={};try{data=await response.json()}catch{}
    if(!response.ok){

@@ -9,6 +9,9 @@
     },
     "api/plant-doctor.js": {
       "maxDuration": 45
+    },
+    "api/chat-stream.js": {
+      "maxDuration": 45
     }
   }
 }

@@ -1,3 +1,4 @@
+import {streamFarmAnswer} from './chat-stream-client.js';
 import {postJsonWithRecovery} from './chat-network.js';
 import { CITIES, CROPS, money, escapeHtml as esc, totals, safeDate, createPlan, weatherLabel, uid } from './core.js';
 
@@ -33,7 +34,7 @@ state.showDemo=false;
 state.onboardingSeen=Boolean(state.onboardingSeen);
 if(!state.chats.length)state.chats=[{id:'welcome',title:'New conversation',messages:[]}];
 if(!state.chats.some(c=>c.id===state.activeChat))state.activeChat=state.chats[0].id;
-const ui={page:readPage(),sidebar:false,modal:null,chatInput:readChatDraft(),chatBusy:false,weather:null,weatherError:'',weatherBusy:false,weatherCity:null,weatherFetchedAt:null,weatherStale:false,photo:null,plantResult:null,plantError:'',plantBusy:false,aiReady:null,aiChecked:false,aiError:'',plantSaved:false,chatError:null,plan:null,recordFilter:'all'};
+const ui={page:readPage(),sidebar:false,modal:null,chatInput:readChatDraft(),chatBusy:false,chatLiveText:'',chatPendingQuestion:'',weather:null,weatherError:'',weatherBusy:false,weatherCity:null,weatherFetchedAt:null,weatherStale:false,photo:null,plantResult:null,plantError:'',plantBusy:false,aiReady:null,aiChecked:false,aiError:'',plantSaved:false,chatError:null,plan:null,recordFilter:'all'};
 const svgPaths={
  home:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
  farm:'<path d="M3 20V9l9-6 9 6v11H3Z"/><path d="M9 20v-8h6v8"/>',leaf:'<path d="M20 4C7 4 3 10 4 17c4 5 14 4 16-13ZM3 21c4-6 8-10 14-12"/>',
@@ -173,7 +174,7 @@ function home(){
 function heading(eyebrow,title,subtitle,action=''){return `<div class="page-heading"><div><span class="eyebrow green">${eyebrow}</span><h1>${title}</h1><p>${subtitle}</p></div>${action}</div>`}
 function farms(){return `<div class="workspace-page">${heading('FARM MANAGEMENT','My Farms','Everything you need to keep your fields organized.',`<button class="primary-button" data-action="add-farm">${icon('plus',18)} Add New Farm</button>`)}<div class="summary-strip">${icon('leaf',22)}<div><strong>${state.farms.length} farms in your workspace</strong><p>View planting dates, crop types and saved farm details.</p></div></div><div class="farms-gallery">${state.farms.length?state.farms.map(farmCard).join(''):`<div class="empty-card"><h3>No farms added yet</h3><p>Add your first farm to get started.</p><button class="primary-button" data-action="add-farm">Add Farm</button></div>`}</div></div>`}
 const activeChat=()=>state.chats.find(c=>c.id===state.activeChat)||state.chats[0];
-function chat(){const c=activeChat();const visibleMessages=c.messages.filter(m=>!(m.role==='assistant'&&String(m.content||'').startsWith('AI service not available:')));return `<div class="chat-page"><div class="chat-heading"><div class="ai-emblem">${icon('leaf',25)}</div><div><h2>SYSMART AI Advisor</h2><p>Your intelligent agricultural assistant</p></div>${statusChip('advisor')}<button data-action="new-chat" class="outline-button">${icon('plus',17)} New Chat</button></div><div class="chat-layout"><aside class="chat-list"><span class="eyebrow">RECENT CONVERSATIONS</span>${state.chats.map(x=>`<button class="history-item ${x.id===state.activeChat?'active':''}" data-action="switch-chat" data-id="${esc(x.id)}">${icon('chat',17)}<span>${esc(x.title)}</span></button>`).join('')}</aside><div class="chat-main"><div id="messages" class="chat-messages">${visibleMessages.length?visibleMessages.map(m=>`<div class="chat-line ${m.role}"><span class="chat-speaker">${m.role==='assistant'?icon('leaf',17):esc(state.profile.name.charAt(0).toUpperCase())}</span><div class="chat-bubble">${esc(m.content).replaceAll('\n','<br>')}</div></div>`).join(''):`<div class="chat-empty"><span class="large-leaf">${icon('leaf',37)}</span><span class="eyebrow">FARMING INTELLIGENCE</span><h1>How can I help your farm today?</h1><p>Get help with crop care, growing plans, farm finances, irrigation and more.</p><div class="prompt-grid"><button data-action="suggest" data-question="How can I improve tomato production during the rainy season?">🍅 &nbsp;Improve tomato production</button><button data-action="suggest" data-question="Create a practical maize planting checklist for Kano.">🌽 &nbsp;Plan my maize season</button><button data-action="suggest" data-question="What signs of nutrient deficiencies should I check on vegetable leaves?">🌿 &nbsp;Recognize crop stress</button><button data-action="suggest" data-question="How do I calculate my farm's real profit?">📊 &nbsp;Understand farm profits</button></div></div>`}${ui.chatBusy?`<div class="chat-line assistant"><span class="chat-speaker">${icon('leaf',17)}</span><div class="chat-bubble">Thinking through your farming question…</div></div>`:''}</div>${ui.chatError?`<section class="chat-error-banner" role="alert"><strong>${ui.chatError.code==='AI_NETWORK_INTERRUPTED'?'Connection interrupted':ui.chatError.code==='GEMINI_QUOTA_LIMIT'?'Gemini usage limit':'Could not complete request'}</strong><p>${esc(ui.chatError.message)}</p><div>${ui.chatError.code==='GEMINI_QUOTA_LIMIT'?`<a href="https://aistudio.google.com/app/rate-limit" target="_blank" rel="noopener noreferrer">Gemini limits</a>`:''}<button type="button" data-action="retry-ai" ${!ui.chatInput?'disabled':''}>Retry question</button><button type="button" data-action="dismiss-ai-error">Dismiss</button></div></section>`:''}${c.messages.some(m=>m.role==='assistant'&&m.content.startsWith('AI service not available:'))?`<button class="chat-clear-old" data-action="clear-chat-errors" type="button">Clear old error messages</button>`:''}<form id="chat-form" class="chat-composer"><textarea id="chat-message" placeholder="Ask anything about your farm…" aria-label="Ask SYSMART AI" rows="2">${esc(ui.chatInput)}</textarea><div class="composer-foot"><span>${icon('shield',14)} Verify important decisions</span><div><button type="button" data-action="dictate" aria-label="Dictate question" class="icon-button">${icon('mic',20)}</button><button class="send-button" type="submit" ${ui.chatBusy?'disabled':''} aria-label="Send question">${icon('send',19)}</button></div></div></form></div></div></div>`}
+function chat(){const c=activeChat();const visibleMessages=c.messages.filter(m=>!(m.role==='assistant'&&String(m.content||'').startsWith('AI service not available:')));return `<div class="chat-page"><div class="chat-heading"><div class="ai-emblem">${icon('leaf',25)}</div><div><h2>SYSMART AI Advisor</h2><p>Your intelligent agricultural assistant</p></div>${statusChip('advisor')}<button data-action="new-chat" class="outline-button">${icon('plus',17)} New Chat</button></div><div class="chat-layout"><aside class="chat-list"><span class="eyebrow">RECENT CONVERSATIONS</span>${state.chats.map(x=>`<button class="history-item ${x.id===state.activeChat?'active':''}" data-action="switch-chat" data-id="${esc(x.id)}">${icon('chat',17)}<span>${esc(x.title)}</span></button>`).join('')}</aside><div class="chat-main"><div id="messages" class="chat-messages">${visibleMessages.length?visibleMessages.map(m=>`<div class="chat-line ${m.role}"><span class="chat-speaker">${m.role==='assistant'?icon('leaf',17):esc(state.profile.name.charAt(0).toUpperCase())}</span><div class="chat-bubble">${esc(m.content).replaceAll('\n','<br>')}</div></div>`).join(''):`<div class="chat-empty"><span class="large-leaf">${icon('leaf',37)}</span><span class="eyebrow">FARMING INTELLIGENCE</span><h1>How can I help your farm today?</h1><p>Get help with crop care, growing plans, farm finances, irrigation and more.</p><div class="prompt-grid"><button data-action="suggest" data-question="How can I improve tomato production during the rainy season?">🍅 &nbsp;Improve tomato production</button><button data-action="suggest" data-question="Create a practical maize planting checklist for Kano.">🌽 &nbsp;Plan my maize season</button><button data-action="suggest" data-question="What signs of nutrient deficiencies should I check on vegetable leaves?">🌿 &nbsp;Recognize crop stress</button><button data-action="suggest" data-question="How do I calculate my farm's real profit?">📊 &nbsp;Understand farm profits</button></div></div>`}${ui.chatBusy?`<div class="chat-line user chat-live-pending"><span class="chat-speaker">${esc(state.profile.name.charAt(0).toUpperCase())}</span><div class="chat-bubble">${esc(ui.chatPendingQuestion)}</div></div><div class="chat-line assistant"><span class="chat-speaker">${icon('leaf',17)}</span><div class="chat-bubble chat-stream-bubble" id="chat-stream-output">${esc(ui.chatLiveText)||'<span class="chat-typing"><i></i><i></i><i></i></span>'}</div></div>`:''}</div>${ui.chatError?`<section class="chat-error-banner" role="alert"><strong>${ui.chatError.code==='AI_NETWORK_INTERRUPTED'?'Connection interrupted':ui.chatError.code==='GEMINI_QUOTA_LIMIT'?'Gemini usage limit':'Could not complete request'}</strong><p>${esc(ui.chatError.message)}</p><div>${ui.chatError.code==='GEMINI_QUOTA_LIMIT'?`<a href="https://aistudio.google.com/app/rate-limit" target="_blank" rel="noopener noreferrer">Gemini limits</a>`:''}<button type="button" data-action="retry-ai" ${!ui.chatInput?'disabled':''}>Retry question</button><button type="button" data-action="dismiss-ai-error">Dismiss</button></div></section>`:''}${c.messages.some(m=>m.role==='assistant'&&m.content.startsWith('AI service not available:'))?`<button class="chat-clear-old" data-action="clear-chat-errors" type="button">Clear old error messages</button>`:''}<form id="chat-form" class="chat-composer"><textarea id="chat-message" placeholder="Ask anything about your farm…" aria-label="Ask SYSMART AI" rows="2">${esc(ui.chatInput)}</textarea><div class="composer-foot"><span>${icon('shield',14)} Verify important decisions</span><div><button type="button" data-action="dictate" aria-label="Dictate question" class="icon-button">${icon('mic',20)}</button><button class="send-button" type="submit" ${ui.chatBusy?'disabled':''} aria-label="Send question">${icon('send',19)}</button></div></div></form></div></div></div>`}
 function plantReportHtml(report){
  if(typeof report==="string")return `<div class="pd-report-legacy">${esc(report).replaceAll('\n','<br>')}</div>`;
  const txt=(value,fallback="Not clear from this photo")=>esc(String(value??fallback));
@@ -239,28 +240,38 @@ async function askAI(question){
  if(!content||ui.chatBusy)return;
  let conversation=activeChat();
  if(!conversation){conversation={id:uid(),title:'New conversation',messages:[]};state.chats.unshift(conversation);state.activeChat=conversation.id}
- const oldMessages=conversation.messages.slice();
- ui.chatInput=content;
- storeChatDraft(content);
- ui.chatError=null;
- ui.chatBusy=true;
+ const previous=conversation.messages.slice();
+ ui.chatInput=content;storeChatDraft(content);
+ ui.chatError=null;ui.chatBusy=true;ui.chatLiveText='';ui.chatPendingQuestion=content;
  navigate('chat');
+ const context=state.farms.map(f=>f.name+': '+cropName(f.crop)+', '+f.area+' ha, '+f.location).join('; ').slice(0,1100);
+ const payload={messages:[...previous,{role:'user',content}].slice(-10),language:'en',farmContext:context};
  try{
-  const result=await postJsonWithRecovery('/api/chat',{
-   messages:[...oldMessages,{role:'user',content}].slice(-20),
-   language:'en',
-   farmContext:state.farms.map(x=>`${x.name}: ${cropName(x.crop)}, ${x.area} ha, ${x.location}`).join('; ').slice(0,2400)
-  });
-  if(!result||typeof result.reply!=='string'||!result.reply.trim())throw Object.assign(new Error('Gemini gave no reply. Tap Retry.'),{code:'AI_EMPTY_RESPONSE'});
-  conversation.messages.push({role:'user',content},{role:'assistant',content:result.reply.trim()});
-  if(!oldMessages.length)conversation.title=content.slice(0,46);
+  let result;
+  try{
+   result=await streamFarmAnswer('/api/chat-stream',payload,{
+    onToken:(part,whole)=>{
+     ui.chatLiveText=whole;
+     const bubble=document.getElementById('chat-stream-output');
+     if(bubble){bubble.textContent=whole;const scroller=document.getElementById('messages');if(scroller)scroller.scrollTop=scroller.scrollHeight}
+    }
+   });
+  }catch(error){
+   // Backward-compatible fallback only if the new endpoint is not deployed.
+   if(['HTTP_404','HTTP_405','STREAM_NOT_AVAILABLE'].includes(error?.code)){
+    const data=await postJsonWithRecovery('/api/chat',payload);
+    result=data?.reply;
+   }else throw error;
+  }
+  if(typeof result!=='string'||!result.trim())throw Object.assign(new Error('Gemini gave no answer. Tap Retry.'),{code:'AI_EMPTY_RESPONSE'});
+  conversation.messages.push({role:'user',content},{role:'assistant',content:result.trim()});
+  if(!previous.length)conversation.title=content.slice(0,46);
   if(ui.chatInput===content){ui.chatInput='';storeChatDraft('')}
-  ui.chatError=null;
  }catch(error){
   if(!ui.chatInput)ui.chatInput=content;
   storeChatDraft(ui.chatInput);
-  ui.chatError={code:String(error?.code||'AI_NETWORK_INTERRUPTED'),message:String(error?.message||'Unable to reach Gemini. Check your connection and retry.')};
- }finally{ui.chatBusy=false;save();render()}
+  ui.chatError={code:String(error?.code||'AI_NETWORK_INTERRUPTED'),message:String(error?.message||'Connection interrupted. Check your internet and retry.')};
+ }finally{ui.chatBusy=false;ui.chatLiveText='';ui.chatPendingQuestion='';save();render()}
 }
 async function analyzePlant(){
  if(!ui.photo){notify('Take or choose a plant photo first.','error');return;}
