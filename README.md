@@ -1,3 +1,7 @@
+## Version 1.4.0 — Premium Plant Doctor crop report
+
+Plant Doctor now requests and renders a structured Gemini report with crop icons, multiple identifiable plants, health/urgency indicators, pests and weeds, visible signs, irrigation, nutrients, soil, light, spacing, safe treatment decisions, monitoring, photos to retake and escalation. All findings are photo-screening, not confirmed diagnoses; low-confidence species, weeds or diseases are **not invented**. The model must not give pesticide prescriptions or infer soil moisture and nutrient levels from pictures. Historic saved reports remain viewable.
+
 ## Version 1.1.0 — Gemini only
 
 SYSMART AI uses **Google Gemini** for both Advisor and Plant Doctor. The OpenAI key is no longer used.

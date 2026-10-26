@@ -1145,3 +1145,82 @@ body{background:var(--sys-midnight)}
 .chat-typing i:nth-child(2){animation-delay:.15s}.chat-typing i:nth-child(3){animation-delay:.3s}
 @keyframes chat-dot{0%,75%,100%{opacity:.35;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 @media(prefers-reduced-motion:reduce){.chat-typing i{animation:none}}
+
+
+/* SYSMART AI Plant Doctor v2 — premium evidence-first crop-health report */
+.pd-page .pd-v2-report{display:grid;gap:14px;min-width:0;animation:pd-reveal .3s ease-out}
+.pd-page .pd-v2-report *{box-sizing:border-box}
+.pd-page .pd-v2-identity{display:flex;align-items:flex-start;gap:15px;padding:19px;border-radius:17px;background:linear-gradient(125deg,#1c5036,#113929);border:1px solid rgba(200,239,169,.25)}
+.pd-page .pd-v2-identity-icon{font-size:37px;line-height:1;display:grid;place-items:center;flex-shrink:0;width:64px;height:64px;border-radius:18px;background:rgba(200,239,169,.13);border:1px solid rgba(200,239,169,.26)}
+.pd-page .pd-v2-identity-content{min-width:0;flex:1}
+.pd-page .pd-v2-kicker{display:block;color:#c8efa9;font-weight:800;letter-spacing:.10em;font-size:9px;margin:1px 0 6px}
+.pd-page .pd-v2-identity h2{font-weight:700;line-height:1.13;letter-spacing:-.04em;color:#f6f8f2;font-size:clamp(19px,2.5vw,28px);margin:0 0 8px;overflow-wrap:anywhere}
+.pd-page .pd-v2-identity p{font-size:12px;color:#c6ddc9;line-height:1.6;margin:0}
+.pd-page .pd-v2-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.pd-page .pd-v2-tags span{display:inline-flex;gap:5px;align-items:center;color:#d7edd7;background:rgba(200,239,169,.08);border:1px solid rgba(200,239,169,.17);font-size:10px;line-height:1.35;padding:6px 9px;border-radius:20px;overflow-wrap:anywhere;max-width:100%}
+.pd-page .pd-v2-tags svg{flex-shrink:0}
+.pd-page .pd-v2-summary{padding:18px;background:#0a2c21;border:1px solid #c8efa92f;border-radius:16px;box-shadow:0 8px 20px #00000010}
+.pd-page .pd-v2-summary-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pd-page .pd-v2-health{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;padding:8px 10px;border-radius:99px;border:1px solid #c8efa93d}
+.pd-page .pd-v2-health i{height:7px;width:7px;border-radius:50%;background:currentColor}
+.pd-page .pd-v2-health-ok{color:#c8efa9;background:#295d3a}
+.pd-page .pd-v2-health-watch{color:#f5c96c;background:#5d4b2d}
+.pd-page .pd-v2-health-risk{color:#ffb8a4;background:#583a32}
+.pd-page .pd-v2-health-unclear{color:#aed9dc;background:#254b4c}
+.pd-page .pd-v2-urgency{font-size:10px;color:#c4d8c5}
+.pd-page .pd-v2-summary h3{font-size:16px;font-weight:760;letter-spacing:-.025em;color:#f6f8f2;margin:13px 0 8px}
+.pd-page .pd-v2-summary p{color:#d5e5d6;font-size:12px;line-height:1.7;margin:0}
+.pd-page .pd-v2-issue{display:grid;gap:5px;padding:12px;margin-top:14px;border-left:3px solid #f5c96c;background:#f5c96c0c;border-radius:0 8px 8px 0}
+.pd-page .pd-v2-issue strong{color:#f5c96c;text-transform:uppercase;font-size:10px;letter-spacing:.07em}
+.pd-page .pd-v2-issue span{font-size:12px;color:#edf3e8;line-height:1.6}
+.pd-page .pd-v2-section{border:1px solid rgba(200,239,169,.17);background:#103729;border-radius:16px;padding:17px;min-width:0}
+.pd-page .pd-v2-section h3{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#f6f8f2;font-weight:760;margin:0 0 11px;line-height:1.45}
+.pd-page .pd-v2-section h3>span{font-size:19px;line-height:1.1}
+.pd-page .pd-v2-section p{line-height:1.65;color:#d7e7d6;font-size:12px;margin:0}
+.pd-page .pd-v2-subtitle{color:#b1cbb8!important;font-size:11px!important;margin:-5px 0 13px!important}
+.pd-page .pd-v2-crops,.pd-page .pd-v2-observations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pd-page .pd-v2-crop{display:flex;align-items:flex-start;gap:11px;border:1px solid rgba(200,239,169,.16);background:#0a2c21;padding:12px;border-radius:13px;min-width:0}
+.pd-page .pd-v2-crop-emoji,.pd-page .pd-v2-obs-emoji{display:grid;place-items:center;flex-shrink:0;background:#1e4f37;border-radius:11px;width:43px;height:43px;font-size:24px;line-height:1}
+.pd-page .pd-v2-crop>div{min-width:0}
+.pd-page .pd-v2-crop strong,.pd-page .pd-v2-observation strong{display:block;font-size:12px;color:#f6f8f2;overflow-wrap:anywhere}
+.pd-page .pd-v2-crop p,.pd-page .pd-v2-observation p{font-size:11px;color:#c6dcc8;line-height:1.55;margin:7px 0 0}
+.pd-page .pd-v2-crop-meta{color:#c8efa9;font-size:10px;text-transform:capitalize;margin-top:4px}
+.pd-page .pd-v2-empty{display:flex;align-items:flex-start;gap:9px;color:#dce9dc;background:#0a2c21;padding:13px;border-radius:10px;font-size:12px;line-height:1.6;grid-column:1/-1}
+.pd-page .pd-v2-empty svg{color:#c8efa9;flex-shrink:0}
+.pd-page .pd-v2-list{padding:0;margin:0;list-style:none;display:grid;gap:10px}
+.pd-page .pd-v2-list li{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.6;color:#e1ede0;overflow-wrap:anywhere}
+.pd-page .pd-v2-check{width:22px;height:22px;border-radius:50%;background:#25543c;color:#c8efa9;flex-shrink:0;display:grid;place-items:center;margin-top:1px}
+.pd-page .pd-v2-muted{color:#b7cbbd!important}
+.pd-page .pd-v2-possibilities{padding-top:12px;margin-top:12px;border-top:1px solid #c8efa91d}
+.pd-page .pd-v2-possibilities strong{color:#f5c96c;font-size:11px;display:block;margin-bottom:10px}
+.pd-page .pd-v2-observation{display:flex;gap:10px;padding:12px;border-radius:12px;background:#09291e;border:1px solid #c8efa919;min-width:0}
+.pd-page .pd-v2-observation>div{flex:1;min-width:0}
+.pd-page .pd-v2-feature-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:5px}
+.pd-page .pd-v2-status-soft{font-size:9px;color:#c4dabf;background:#c8efa911;border-radius:6px;padding:4px 6px}
+.pd-page .pd-v2-observation .pd-v2-list{margin-top:12px;gap:7px}
+.pd-page .pd-v2-observation .pd-v2-list li{font-size:10px}
+.pd-page .pd-v2-observation .pd-v2-check{height:19px;width:19px}
+.pd-page .pd-v2-care-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.pd-page .pd-v2-care-item{display:flex;gap:11px;border:1px solid #c8efa921;background:#09291e;border-radius:12px;padding:13px;min-width:0}
+.pd-page .pd-v2-care-item>span{font-size:21px}
+.pd-page .pd-v2-care-item strong{font-size:11px;color:#eaf6e7}
+.pd-page .pd-v2-care-item p{font-size:11px;color:#b9d6c1;margin:5px 0 0;line-height:1.58}
+.pd-page .pd-v2-plan{border-color:#c8efa94d;background:#143d2b}
+.pd-page .pd-v2-plan .pd-v2-check{background:#295d3d}
+.pd-page .pd-v2-treatment{border-color:#f5c96c54;background:#342e20c9}
+.pd-page .pd-v2-treatment h3{color:#f5dfab}
+.pd-page .pd-v2-treatment p{color:#ece2c9}
+.pd-page .pd-v2-duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pd-page .pd-v2-duo .pd-v2-section{height:100%}
+.pd-page .pd-v2-photos{background:#113c36;border-color:#74ccd145}
+.pd-page .pd-v2-retake{margin-top:13px;display:inline-flex;align-items:center;gap:8px;background:#c8efa9;color:#103a2b;min-height:44px;padding:11px 15px;border:1px solid #d8f5c2;font-size:12px;font-weight:760;border-radius:10px}
+.pd-page .pd-v2-retake:hover{filter:brightness(1.04)}
+.pd-page .pd-v2-photos .pd-v2-list{margin-top:11px}
+.pd-page .pd-v2-help{border:1px solid #74ccd13b;padding:14px 16px;border-radius:13px;background:#74ccd111}
+.pd-page .pd-v2-help strong{display:flex;gap:8px;align-items:center;color:#9ce3df;font-size:12px}
+.pd-page .pd-v2-help p{font-size:11px;line-height:1.6;color:#d3e5de;margin:8px 0 0}
+.pd-page .pd-v2-disclaimer{display:flex;align-items:flex-start;gap:9px;color:#ddc9a6;background:#f5c96c0e;padding:13px 15px;border:1px solid #f5c96c2f;border-radius:11px;font-size:11px;line-height:1.6;margin:0}
+.pd-page .pd-v2-disclaimer svg{flex-shrink:0}
+@media(max-width:950px){.pd-page .pd-v2-crops,.pd-page .pd-v2-observations,.pd-page .pd-v2-duo{grid-template-columns:1fr}}
+@media(max-width:620px){.pd-page .pd-v2-identity{padding:13px;gap:10px}.pd-page .pd-v2-identity-icon{width:47px;height:47px;font-size:28px;border-radius:12px}.pd-page .pd-v2-summary,.pd-page .pd-v2-section{padding:13px}.pd-page .pd-v2-identity h2{font-size:18px}.pd-page .pd-v2-care-grid{grid-template-columns:1fr}.pd-page .pd-v2-crop-emoji,.pd-page .pd-v2-obs-emoji{width:37px;height:37px;font-size:21px}.pd-page .pd-v2-retake{width:100%;justify-content:center}.pd-page .pd-v2-tags span{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.pd-page .pd-v2-report{animation:none!important}}
